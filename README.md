@@ -1,2 +1,2 @@
 # MiniPremiere
-C++ project using OPENCV QT FFMPEG
+This is Model Branch.
