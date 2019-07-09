@@ -11,6 +11,7 @@ Debug
 .vscode/*
 *.index
 *.db
+*.xml
 *.struct
 .idea/*
 cmake-build-debug
