@@ -3,6 +3,6 @@
 //
 #include "./model/Model.h"
 int main(){
-    std::cout<< "sd";
+    av_register_all();
 }
 

@@ -9,6 +9,7 @@ class EditableVideo{
 private:
 
 public:
+    EditableVideo();
 };
 
 #endif //MODEL_TEST_EDITABLEVIDEO_H

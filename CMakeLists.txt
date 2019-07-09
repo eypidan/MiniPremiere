@@ -21,7 +21,7 @@ set(OpenCV_LIBS opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs)
 set(ffmpeg_LIBS avcodec avformat avutil avdevice)
 
 
-set(SOURCE_FILES ./testmodel.cpp ./model/Model.h  ./model/EditableVideo.h)
+set(SOURCE_FILES ./testmodel.cpp ./model/EditableVideo.cpp ./model/Model.h  ./model/EditableVideo.h)
 #link
 add_executable(model_test ${SOURCE_FILES})
 target_link_libraries(model_test ${OpenCV_LIBS} ${ffmpeg_LIBS})
