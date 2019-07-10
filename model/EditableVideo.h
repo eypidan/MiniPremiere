@@ -18,18 +18,31 @@ private:
     AVFrame         *currentFrame;
     AVCodecContext  *pCodecContext;
     AVFrame         *currentFrameRGB;
+
     int video_stream_index = -1;
     int frameFinished = 0;
     int64_t prepts = 0;
+    int             numBytes;
+    uint8_t         *buffer;
+
     static void CopyDate(AVFrame *pFrame,int width,int height,int64_t time);
     static void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame);
 public:
     EditableVideo(std::string srcPath);
-    ~EditableVideo()= default;
+    ~EditableVideo();
     cv::Mat getNextImage();
     inline int64_t getCurrentTime(){return currentTime;}
     //cv::Mat seekImage(int64_t timeStamp);
 };
+
+EditableVideo::~EditableVideo(){
+    av_free(buffer);
+    av_free(currentFrameRGB);
+
+    av_free(currentFrame);
+    avcodec_close(pCodecContext);
+    avformat_close_input(&pFormatContext);
+}
 
 EditableVideo::EditableVideo(std::string srcPath) {
     pFormatContext = avformat_alloc_context();
@@ -47,6 +60,12 @@ EditableVideo::EditableVideo(std::string srcPath) {
     this->currentTime = 0;
     this->playing = false;
     this->currentFrame = av_frame_alloc();
+    this->currentFrameRGB = av_frame_alloc();
+
+    //malloc a part of memory to store original data while converting
+    numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecContext->width, pCodecContext->height);
+    buffer = (uint8_t *)av_malloc( numBytes*sizeof(uint8_t));
+    avpicture_fill((AVPicture *)currentFrameRGB, buffer, AV_PIX_FMT_RGB24,pCodecContext->width, pCodecContext->height);
 
     printf("format %s, duration %lld us, bit_rate %lld", pFormatContext->iformat->name, pFormatContext->duration, pFormatContext->bit_rate);
     if (avformat_find_stream_info(pFormatContext,  nullptr) < 0) {
@@ -111,6 +130,7 @@ cv::Mat EditableVideo::getNextImage() {
                 prepts = currentPacket.pts;
             }
         }
+        av_free_packet(&currentPacket);
     }
 }
 

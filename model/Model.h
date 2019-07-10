@@ -11,13 +11,14 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <string>
+
 extern "C"{
     #include <libavformat/avformat.h>
-    #include <libswscale/swscale.h>
     #include <libavcodec/avcodec.h>
+    #include "libswscale/swscale.h"
     #include <libavutil/common.h>
     #include <libavutil/imgutils.h>
-    #include <libavutil/mathematics.h>
+    #include "libavutil/mathematics.h"
     #include <libavutil/samplefmt.h>
     #include <libavutil/pixfmt.h>
 }
