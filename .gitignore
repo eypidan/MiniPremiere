@@ -7,6 +7,7 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 Debug
+output/*
 .vs
 .vscode/*
 *.index
@@ -15,4 +16,4 @@ Debug
 *.struct
 .idea/*
 cmake-build-debug
-./model/.idea/*
+model/.idea/*

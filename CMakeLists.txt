@@ -11,6 +11,7 @@ if(WIN32)
     include_directories(C:/CodeLibrary/opencv-3.4.6/build/install/include)
     include_directories(C:/CodeLibrary/ffmpeg-4.1.3-win64-dev/include)
     link_directories(C:/CodeLibrary/ffmpeg-4.1.3-win64-dev/lib)
+    link_directories(C:\\CodeLibrary\\opencv-3.4.6\\build\\install\\x64\\mingw\\bin)
     set(CMAKE_PREFIX_PATH  C:/CodeLibrary/opencv-3.4.6/build/install)
 endif(WIN32)
 
@@ -21,7 +22,7 @@ set(OpenCV_LIBS opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs)
 set(ffmpeg_LIBS avcodec avformat avutil avdevice)
 
 
-set(SOURCE_FILES ./testmodel.cpp ./model/EditableVideo.cpp ./model/Model.h  ./model/EditableVideo.h)
+set(SOURCE_FILES ./testmodel.cpp  ./model/Model.h  ./model/EditableVideo.h)
 #link
 add_executable(model_test ${SOURCE_FILES})
 target_link_libraries(model_test ${OpenCV_LIBS} ${ffmpeg_LIBS})
