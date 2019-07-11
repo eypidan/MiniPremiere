@@ -1,2 +1,2 @@
-# MiniPremiere
-C++ project using OPENCV QT FFMPEG
+# View Layer
+### Start from file read
