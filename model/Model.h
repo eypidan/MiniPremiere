@@ -5,25 +5,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include <iostream>
-#include <memory>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <string>
 
-extern "C"{
-    #include <libavformat/avformat.h>
-    #include <libavcodec/avcodec.h>
-    #include "libswscale/swscale.h"
-    #include <libavutil/common.h>
-    #include <libavutil/imgutils.h>
-    #include "libavutil/mathematics.h"
-    #include <libavutil/samplefmt.h>
-    #include <libavutil/pixfmt.h>
-}
 #include "./EditableVideo.h"
-
 class Model
 {
 private:

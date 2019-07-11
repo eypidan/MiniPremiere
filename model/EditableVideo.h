@@ -4,8 +4,22 @@
 
 #ifndef MODEL_TEST_EDITABLEVIDEO_H
 #define MODEL_TEST_EDITABLEVIDEO_H
-
-#include "./Model.h"
+#include <iostream>
+#include <memory>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <string>
+extern "C"{
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libswscale/swscale.h>
+#include <libavutil/common.h>
+#include <libavutil/imgutils.h>
+#include "libavutil/mathematics.h"
+#include <libavutil/samplefmt.h>
+#include <libavutil/pixfmt.h>
+}
 
 class EditableVideo{
 private:
@@ -18,14 +32,14 @@ private:
     AVFrame         *currentFrame;
     AVCodecContext  *pCodecContext;
     AVFrame         *currentFrameRGB;
-
+    cv::Mat         currentMat;
     int video_stream_index = -1;
     int frameFinished = 0;
     int64_t prepts = 0;
     int             numBytes;
     uint8_t         *buffer;
 
-    static void CopyDate(AVFrame *pFrame,int width,int height,int64_t time);
+    void CopyDate(AVFrame *pFrame,int width,int height,int64_t time);
     static void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame);
 public:
     EditableVideo(std::string srcPath);
@@ -63,9 +77,7 @@ EditableVideo::EditableVideo(std::string srcPath) {
     this->currentFrameRGB = av_frame_alloc();
 
     //malloc a part of memory to store original data while converting
-    numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecContext->width, pCodecContext->height);
-    buffer = (uint8_t *)av_malloc( numBytes*sizeof(uint8_t));
-    avpicture_fill((AVPicture *)currentFrameRGB, buffer, AV_PIX_FMT_RGB24,pCodecContext->width, pCodecContext->height);
+
 
     printf("format %s, duration %lld us, bit_rate %lld", pFormatContext->iformat->name, pFormatContext->duration, pFormatContext->bit_rate);
     if (avformat_find_stream_info(pFormatContext,  nullptr) < 0) {
@@ -107,31 +119,46 @@ EditableVideo::EditableVideo(std::string srcPath) {
         // print its name, id and bitrate
         printf("\tCodec %s ID %d bit_rate %lld", pLocalCodec->name, pLocalCodec->id, pCodecParameters->bit_rate);
     }
+
+    numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecContext->width, pCodecContext->height);
+    buffer = (uint8_t *)av_malloc( numBytes*sizeof(uint8_t));
+    avpicture_fill((AVPicture *)currentFrameRGB, buffer, AV_PIX_FMT_RGB24,pCodecContext->width, pCodecContext->height);
 }
 
 cv::Mat EditableVideo::getNextImage() {
-    if(av_read_frame(this->pFormatContext, &this->currentPacket) >= 0){
-        if(this->currentPacket.stream_index == this->video_stream_index){ //judge if video data
-            avcodec_decode_video2(pCodecContext, currentFrame, &frameFinished, &currentPacket);
-            if(frameFinished){
-                static struct SwsContext *img_convert_ctx;
-                if(img_convert_ctx == NULL) {
-                    int w = pCodecContext->width;
-                    int h = pCodecContext->height;
-                    img_convert_ctx = sws_getContext(w, h, pCodecContext->pix_fmt, w, h, AV_PIX_FMT_RGB24, SWS_BICUBIC,NULL, NULL, NULL);
+    while(1){
+        if(av_read_frame(this->pFormatContext, &this->currentPacket) >= 0){
+            if(this->currentPacket.stream_index == this->video_stream_index){ //judge if video data
+                avcodec_decode_video2(pCodecContext, currentFrame, &frameFinished, &currentPacket);
+                if(frameFinished){
+                    static struct SwsContext *img_convert_ctx;
                     if(img_convert_ctx == NULL) {
-                        fprintf(stderr, "Cannot initialize the conversion context!\n");
-                        exit(1);
+                        int w = pCodecContext->width;
+                        int h = pCodecContext->height;
+                        img_convert_ctx = sws_getContext(w, h, pCodecContext->pix_fmt, w, h, AV_PIX_FMT_RGB24, SWS_BICUBIC,NULL, NULL, NULL);
+                        if(img_convert_ctx == NULL) {
+                            fprintf(stderr, "Cannot initialize the conversion context!\n");
+                            exit(1);
+                        }
                     }
+                    //convert YUV420p image to BRG24
+                    sws_scale(img_convert_ctx, currentFrame->data, currentFrame->linesize, 0, pCodecContext->height, currentFrameRGB->data, currentFrameRGB->linesize);
+                    CopyDate(currentFrameRGB, pCodecContext->width, pCodecContext->height,currentPacket.pts-prepts);
+                    prepts = currentPacket.pts;
+                    return currentMat;
                 }
-                //convert YUV420p image to BRG24
-                sws_scale(img_convert_ctx, currentFrame->data, currentFrame->linesize, 0, pCodecContext->height, currentFrameRGB->data, currentFrameRGB->linesize);
-                CopyDate(currentFrameRGB, pCodecContext->width, pCodecContext->height,currentPacket.pts-prepts);
-                prepts = currentPacket.pts;
+                av_packet_unref(&currentPacket);
+                break;
             }
+            av_packet_unref(&currentPacket);
         }
-        av_free_packet(&currentPacket);
+        else{
+            cv::Mat blackPhoto(cv::Size(pCodecContext->width, pCodecContext->height), CV_8UC3, cv::Scalar(0));
+            currentMat = blackPhoto.clone();
+            return currentMat;
+        }
     }
+
 }
 
 void EditableVideo::CopyDate(AVFrame *pFrame, int width, int height, int64_t time) {
@@ -152,10 +179,8 @@ void EditableVideo::CopyDate(AVFrame *pFrame, int width, int height, int64_t tim
             pData[i * stepWidth + j * nChannels + 2] = pFrame->data[0][i * pFrame->linesize[0] + j * nChannels + 0];
         }
     }
+    currentMat = frameImage.clone();
 
-    cv::namedWindow("Video", CV_WINDOW_AUTOSIZE);
-    cv::imshow("Video", frameImage);
-    cv::waitKey(time);
 }
 
 void EditableVideo::SaveFrame(AVFrame *pFrame, int width, int height, int iFrame) {

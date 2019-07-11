@@ -4,7 +4,12 @@
 #include "./model/Model.h"
 
 int main(){
-   std::string test_string = "C:\\Users\\px\\Desktop\\MiniPremiere\\test.mp4";
-   EditableVideo test(test_string);
-   test.getNextImage();
+   EditableVideo test("C:\\Users\\px\\Desktop\\MiniPremiere\\test.mp4");
+   cv::Mat image;
+   for(int i=0;i<50;i++){
+      image = test.getNextImage();
+       cv::namedWindow("Video", CV_WINDOW_AUTOSIZE);
+       cv::imshow("Video", image);
+       cv::waitKey(20);
+   }
 }
