@@ -5,11 +5,11 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
-class commandBase{
+class CommandBase{
 protected:
     std::shared_ptr<Parameters> params;
 public:
-    Command();
+    CommandBase();
     void set_parameters(std::shared_ptr<Parameters> parameters){
         params = parameters;
     }

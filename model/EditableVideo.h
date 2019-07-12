@@ -6,11 +6,12 @@
 #define EDITABLEVIDEO_H
 #include <iostream>
 #include <memory>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc.hpp>
 #include <string>
 #include <vector>
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <QImage>
 extern "C"{
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
