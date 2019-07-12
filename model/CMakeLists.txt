@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(model_test)
 
-set(CMAKE_CXX_STANDARD  17)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -21,7 +21,7 @@ set(OpenCV_LIBS opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs)
 set(ffmpeg_LIBS avcodec avformat avutil avdevice swscale)
 
 
-set(SOURCE_FILES ./testmodel.cpp  ./model/Model.h  ./model/EditableVideo.h)
+set(SOURCE_FILES ./testmodel.cpp  ./Model.h  ./EditableVideo.h)
 #link
 add_executable(model_test ${SOURCE_FILES})
 target_link_libraries(model_test ${OpenCV_LIBS} ${ffmpeg_LIBS})
