@@ -24,6 +24,7 @@ std::shared_ptr<cv::Mat> openfile(const std::string path, int nowtime = 0)
 {
     int nowframes = nowtime * framerate;
     std::shared_ptr<cv::Mat> currentmat;
+    initvideo(path);
     for (int i = 0; i <= nowframes; i++)
     {
 	currentmat = Video->getNextImage();
