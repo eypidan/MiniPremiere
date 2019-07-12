@@ -11,7 +11,8 @@ class ViewModel
 	ViewModel()= default;
 	~ViewModel(){Video.reset();}
 	std::shared_ptr<EditableVideo> initvideo(const std::string path);
-	std::shared_ptr<cv::Mat> openfile(const std::string path);
+	std::shared_ptr<cv::Mat> openfile(const std::string path, int nowtime = 0);
+//	std::shared_ptr<cv::Mat> 
 }
 
 std::shared_ptr<EditableVideo> initvideo(const std::string path)
