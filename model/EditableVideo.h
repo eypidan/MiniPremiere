@@ -10,6 +10,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <string>
+#include <vector>
 extern "C"{
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
@@ -32,7 +33,7 @@ private:
     AVFrame         *currentFrame;
     AVCodecContext  *pCodecContext;
     AVFrame         *currentFrameRGB;
-    cv::Mat         currentMat;
+    std::shared_ptr<cv::Mat> currentMatPointer;
     int video_stream_index = -1;
     int frameFinished = 0;
     int64_t prepts = 0;
@@ -42,20 +43,22 @@ private:
     void CopyDate(AVFrame *pFrame,int width,int height,int64_t time);
     static void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame);
 public:
-    EditableVideo(std::string srcPath);
+    explicit EditableVideo(std::string srcPath);
     ~EditableVideo();
-    cv::Mat getNextImage();
+    std::shared_ptr<cv::Mat> getNextImage();
     inline int64_t getCurrentTime(){return currentTime;}
     //cv::Mat seekImage(int64_t timeStamp);
 };
 
 EditableVideo::~EditableVideo(){
+    currentMatPointer.reset();
     av_free(buffer);
     av_free(currentFrameRGB);
 
     av_free(currentFrame);
     avcodec_close(pCodecContext);
     avformat_close_input(&pFormatContext);
+
 }
 
 EditableVideo::EditableVideo(std::string srcPath) {
@@ -125,7 +128,7 @@ EditableVideo::EditableVideo(std::string srcPath) {
     avpicture_fill((AVPicture *)currentFrameRGB, buffer, AV_PIX_FMT_RGB24,pCodecContext->width, pCodecContext->height);
 }
 
-cv::Mat EditableVideo::getNextImage() {
+std::shared_ptr<cv::Mat> EditableVideo::getNextImage() {
     while(1){
         if(av_read_frame(this->pFormatContext, &this->currentPacket) >= 0){
             if(this->currentPacket.stream_index == this->video_stream_index){ //judge if video data
@@ -145,7 +148,7 @@ cv::Mat EditableVideo::getNextImage() {
                     sws_scale(img_convert_ctx, currentFrame->data, currentFrame->linesize, 0, pCodecContext->height, currentFrameRGB->data, currentFrameRGB->linesize);
                     CopyDate(currentFrameRGB, pCodecContext->width, pCodecContext->height,currentPacket.pts-prepts);
                     prepts = currentPacket.pts;
-                    return currentMat;
+                    return currentMatPointer;
                 }
                 av_packet_unref(&currentPacket);
                 break;
@@ -153,9 +156,9 @@ cv::Mat EditableVideo::getNextImage() {
             av_packet_unref(&currentPacket);
         }
         else{
-            cv::Mat blackPhoto(cv::Size(pCodecContext->width, pCodecContext->height), CV_8UC3, cv::Scalar(0));
-            currentMat = blackPhoto.clone();
-            return currentMat;
+            std::shared_ptr<cv::Mat> blackPhoto = std::make_shared<cv::Mat>(cv::Size(pCodecContext->width, pCodecContext->height), CV_8UC3, cv::Scalar(0));
+            currentMatPointer = blackPhoto;
+            return currentMatPointer;
         }
     }
 
@@ -167,10 +170,10 @@ void EditableVideo::CopyDate(AVFrame *pFrame, int width, int height, int64_t tim
     int		nChannels;
     size_t		stepWidth;
     uchar  *	pData;
-    cv::Mat frameImage(cv::Size(width, height), CV_8UC3, cv::Scalar(0));
-    stepWidth = frameImage.step;
-    nChannels = frameImage.channels();
-    pData = frameImage.data;
+    std::shared_ptr<cv::Mat> frameImage = std::make_shared<cv::Mat>(cv::Size(width, height), CV_8UC3, cv::Scalar(0));
+    stepWidth = frameImage->step;
+    nChannels = frameImage->channels();
+    pData = frameImage->data;
 
     for(int i = 0; i < height; i++){
         for(int j = 0; j < width; j++){
@@ -179,7 +182,7 @@ void EditableVideo::CopyDate(AVFrame *pFrame, int width, int height, int64_t tim
             pData[i * stepWidth + j * nChannels + 2] = pFrame->data[0][i * pFrame->linesize[0] + j * nChannels + 0];
         }
     }
-    currentMat = frameImage.clone();
+    currentMatPointer = frameImage;
 
 }
 

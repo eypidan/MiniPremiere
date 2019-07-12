@@ -4,12 +4,15 @@
 #include "./model/Model.h"
 
 int main(){
-   EditableVideo test("C:\\Users\\px\\Desktop\\MiniPremiere\\test.mp4");
-   cv::Mat image;
-   for(int i=0;i<50;i++){
-      image = test.getNextImage();
-       cv::namedWindow("Video", CV_WINDOW_AUTOSIZE);
-       cv::imshow("Video", image);
-       cv::waitKey(20);
-   }
+
+    Model testModel;
+    std::shared_ptr<EditableVideo> testVideo;
+    testVideo = testModel.openFile("C:\\Users\\px\\Desktop\\MiniPremiere\\test.mp4");
+    std::shared_ptr<cv::Mat> testMat;
+    for(int i=0;i<500;i++){
+        testMat = testVideo->getNextImage();
+        cv::namedWindow("Video", CV_WINDOW_AUTOSIZE);
+        cv::imshow("Video", *testMat);
+        cv::waitKey(10);
+    }
 }
