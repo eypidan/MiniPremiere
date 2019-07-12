@@ -12,8 +12,6 @@ MainWindow::MainWindow():
 
     CreateStatusBar();
     CreateMenuAndToolBar();
-
-    //for test
     CreatePicLabel();
     CreatePlayButton();
     SetTimer();
@@ -103,29 +101,99 @@ void MainWindow::CreatePicLabel()
     pic->setScaledContents(true);
     //layout()->addWidget(pic);
 }
+
 void MainWindow::CreatePlayButton()
 {
     button = new QPushButton(tr("开始"));
     //layout()->addWidget(button);
-    connect(button, SIGNAL(clicked()), this, SLOT(on_click()));
+    connect(button, SIGNAL(clicked()), this, SLOT(OnClick()));
 }
+
 void MainWindow::SetTimer()
 {
     timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(on_timer()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(OnTimer()));
 }
-void MainWindow::on_timer()
+
+void MainWindow::SetLayer()
 {
-    static double angle = 0;
+    QWidget *widget = new QWidget(this);
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    QVBoxLayout *vLayout = new QVBoxLayout();
 
-    picture = new QPixmap("E:\\C++\\project\\MiniPremiere\\image\\icon.jpg");
-    picture->scaled(pic->size(), Qt::KeepAspectRatio);
-    pic->setPixmap(*picture);
-    //pic->setAlignment(Qt::AlignHCenter);
+    hLayout->addWidget(start);
+    hLayout->addWidget(slider);
+    hLayout->addWidget(end);
 
-    angle += 0.1;
+    vLayout->addWidget(pic);
+    vLayout->addLayout(hLayout);
+    vLayout->addWidget(button);
+    widget->setLayout(vLayout);
+    setCentralWidget(widget);
 }
-void MainWindow::on_click()
+
+void MainWindow::SetSlider()
+{
+    slider = new QSlider(Qt::Horizontal);
+    slider->setMaximum(6000);
+    slider->setMinimum(0);
+    slider->setValue(0);
+    slider->setFixedSize(QSize(860, 30));
+    //slider->setSingleStep(1);
+    //slider->setStyleSheet(QString("QSlider::handle{border-radius:10px;}"));
+
+    start = new QLineEdit("00:00");
+    end = new QLineEdit("100:00");
+    start->setStyleSheet(QString("background:transparent;border-style:outset;border-width:0"));
+    end->setStyleSheet(QString("background:transparent;border-style:outset;border-width:0"));
+    start->setEnabled(false);
+    end->setEnabled(false);
+    start->setFocusPolicy(Qt::NoFocus);
+    end->setFocusPolicy(Qt::NoFocus);
+    start->setFixedSize(QSize(50, 30));
+    end->setFixedSize(QSize(50, 30));
+    start->setAlignment(Qt::AlignHCenter);
+    end->setAlignment(Qt::AlignHCenter);
+
+    connect(slider, SIGNAL(valueChanged(int)), this, SLOT(SetLineEditValue()));
+}
+
+void MainWindow::SetLineEditValue()
+{
+    int pos = slider->value();
+    QString str = QString("%1:%2").arg(pos / 60, 2, 10, QLatin1Char('0')).arg(pos % 60, 2, 10, QLatin1Char('0'));
+    start->setText(str);
+}
+
+void MainWindow::OnTimer()
+{
+//    static double angle = 0;
+//
+//    picture = new QPixmap("E:\\C++\\project\\MiniPremiere\\image\\zju.png");
+//    picture->scaled(pic->size(), Qt::KeepAspectRatio);
+//    pic->setPixmap(*picture);
+//    //pic->setAlignment(Qt::AlignHCenter);
+//
+//    angle += 0.1;
+//    static int i = 1;
+//    cv::Mat mat;
+//
+//    std::string test_string = "../video/test.mp4";
+//    EditableVideo test(test_string);
+//    mat = test.getNextImage();
+//
+//    if(i == 1){
+//        image = FromCVtoQImage(mat);
+//        i == 0;
+//    }
+//
+//    picture = QPixmap::fromImage(image);
+//    picture.scaled(pic->size(), Qt::KeepAspectRatio);
+//    pic->setPixmap(picture);
+
+}
+
+void MainWindow::OnClick()
 {
     static int j = 1;
     if(j == 1){
@@ -140,35 +208,16 @@ void MainWindow::on_click()
     }
 }
 
-void MainWindow::SetLayer()
-{
-    QWidget *widget = new QWidget(this);
-    //QHBoxLayout *hLayout = new QHBoxLayout();
-    QVBoxLayout *vLayout = new QVBoxLayout();
+//void MainWindow::SetOpenFileCommand(std::shared_ptr<Command> OpenFileCommand)
+//{
+//    this->OpenFileCommand = OpenFileCommand;
+//}
 
-    vLayout->addWidget(pic);
-    vLayout->addWidget(slider);
-    vLayout->addWidget(button);
-    //hLayout->addLayout(vLayout);
-    widget->setLayout(vLayout);
-    setCentralWidget(widget);
-}
-
-void MainWindow::SetSlider()
-{
-    slider = new QSlider(Qt::Horizontal);
-    slider->setMaximum(100);
-    slider->setMinimum(0);
-    slider->setValue(0);
-    //slider->setSingleStep(1);
-    //slider->setStyleSheet(QString("QSlider::handle{border-radius:10px;}"));
-    
-    start = new QLabel
-}
-
-
+//need to be updated
 void MainWindow::OpenOperation()
 {
+    //OpenFileCommand->Setparameters(std::string FilePath);
+    //OpenFileCommand->Exec();
     qDebug() << "Press Open" << endl;
 }
 
