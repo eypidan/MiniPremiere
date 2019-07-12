@@ -2,8 +2,8 @@
 // Created by px on 7/9/2019.
 //
 
-#ifndef MODEL_TEST_EDITABLEVIDEO_H
-#define MODEL_TEST_EDITABLEVIDEO_H
+#ifndef EDITABLEVIDEO_H
+#define EDITABLEVIDEO_H
 #include <iostream>
 #include <memory>
 #include <opencv2/core/core.hpp>
@@ -208,4 +208,4 @@ void EditableVideo::SaveFrame(AVFrame *pFrame, int width, int height, int iFrame
     fclose(pFile);
 }
 
-#endif //MODEL_TEST_EDITABLEVIDEO_H
+#endif //EDITABLEVIDEO_H
