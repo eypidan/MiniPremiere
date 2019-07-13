@@ -211,12 +211,12 @@ void MainWindow::UpdateQImage()
     pic->setPixmap(picture);
 }
 
-void MainWindow::SetOpenFileCommand(std::shared_ptr<commandBase> OpenFileCommand)
+void MainWindow::SetOpenFileCommand(std::shared_ptr<CommandBase> OpenFileCommand)
 {
     this->OpenFileCommand = OpenFileCommand;
 }
 
-void MainWindow::SetFetchQImageCommand(std::shared_ptr<commandBase> FetchQImageCommand){
+void MainWindow::SetFetchQImageCommand(std::shared_ptr<CommandBase> FetchQImageCommand){
     this->FetchQImageCommand = FetchQImageCommand;
 }
 
@@ -228,6 +228,11 @@ void MainWindow::SetQImage(std::shared_ptr<QImage> image)
 void MainWindow::SetTimeDuration(std::shared_ptr<int> timeduration)
 {
     this->timeduration = timeduration;
+}
+
+void MainWindow::SetFrameRate(std::shared_ptr<int> framerate)
+{
+    this->framerate = framerate;
 }
 
 std::shared_ptr<Notification> MainWindow::GetUpdateViewNotification()

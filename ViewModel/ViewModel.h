@@ -2,8 +2,8 @@
 #define VIEWMODEL_H 
 
 #include "../model/Model.h"
-#include "../common/Command.h"
-#include "../common/Notification.h"
+#include "../common/command.h"
+#include "../common/notification.h"
 
 class ViewModel {
 private:
