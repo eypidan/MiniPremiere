@@ -49,8 +49,8 @@ public:
     ~EditableVideo();
     std::shared_ptr<cv::Mat> getNextImage();
     inline int64_t getCurrentTime(){return currentTime;}
-    inline GetFps(){return VideoFps;}
-    inline GetDuration(){return duration;}
+    inline int GetFps(){return VideoFps;}
+    inline int64_t GetDuration(){return duration;}
     //cv::Mat seekImage(int64_t timeStamp);
 };
 #endif //EDITABLEVIDEO_H

@@ -41,8 +41,8 @@ public:
     }
     inline void ExecOpenFileCommand(std::string &path){
 		testVideo = model->openFile(path);
-        VideoFps = std::make_shared<int> (testVideo->GetFps());
-		VideoDuration = std::make_shared<int> (testVideo->GetDuration());
+        *VideoFps = testVideo->GetFps();
+		*VideoDuration = testVideo->GetDuration();
 	}
 
     //command FetcgQimage
