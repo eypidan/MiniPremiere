@@ -41,8 +41,8 @@ public:
 
     void UpdateQImage();
     //set command
-    void SetOpenFileCommand(std::shared_ptr<commandBase>);
-    void SetFetchQImageCommand(std::shared_ptr<commandBase>);
+    void SetOpenFileCommand(std::shared_ptr<CommandBase>);
+    void SetFetchQImageCommand(std::shared_ptr<CommandBase>);
     //set data
     void SetQImage(std::shared_ptr<QImage>);
     void SetFrameRate(std::shared_ptr<int>);
@@ -77,8 +77,8 @@ private:
     std::shared_ptr<QImage> image;
     std::shared_ptr<int> framerate;
     std::shared_ptr<int> timeduration;
-    std::shared_ptr<commandBase> OpenFileCommand;
-    std::shared_ptr<commandBase> FetchQImageCommand;
+    std::shared_ptr<CommandBase> OpenFileCommand;
+    std::shared_ptr<CommandBase> FetchQImageCommand;
     std::shared_ptr<UpdateViewNotification> TheUpdateViewNotification;
 };
 #endif

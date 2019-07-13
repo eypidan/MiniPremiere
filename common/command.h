@@ -1,7 +1,7 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
-class commandBase{
+class CommandBase{
 public:
     Command();
     virtual void SetParameters(std::string &filepath);
