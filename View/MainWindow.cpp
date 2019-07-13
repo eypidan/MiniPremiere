@@ -17,6 +17,10 @@ MainWindow::MainWindow():
     SetTimer();
     SetSlider();
     SetLayer();
+
+    TheUpdateViewNotification = std::make_shared<UpdateViewNotification>(this);
+
+    isLoaded = 0;
 }
 
 void MainWindow::CreateStatusBar()
@@ -104,7 +108,10 @@ void MainWindow::CreatePicLabel()
 
 void MainWindow::CreatePlayButton()
 {
-    button = new QPushButton(tr("开始"));
+    button = new QPushButton();
+    button->setIcon(QIcon("../image/play.ico"));
+    button->setIconSize(QSize(40, 40));
+    button->setStyleSheet(QString("QPushButton{border-radius:64px;}"));
     //layout()->addWidget(button);
     connect(button, SIGNAL(clicked()), this, SLOT(OnClick()));
 }
@@ -135,7 +142,7 @@ void MainWindow::SetLayer()
 void MainWindow::SetSlider()
 {
     slider = new QSlider(Qt::Horizontal);
-    slider->setMaximum(6000);
+    slider->setMaximum(0);
     slider->setMinimum(0);
     slider->setValue(0);
     slider->setFixedSize(QSize(860, 30));
@@ -143,7 +150,7 @@ void MainWindow::SetSlider()
     //slider->setStyleSheet(QString("QSlider::handle{border-radius:10px;}"));
 
     start = new QLineEdit("00:00");
-    end = new QLineEdit("100:00");
+    end = new QLineEdit("00:00");
     start->setStyleSheet(QString("background:transparent;border-style:outset;border-width:0"));
     end->setStyleSheet(QString("background:transparent;border-style:outset;border-width:0"));
     start->setEnabled(false);
@@ -167,58 +174,84 @@ void MainWindow::SetLineEditValue()
 
 void MainWindow::OnTimer()
 {
-//    static double angle = 0;
-//
-//    picture = new QPixmap("E:\\C++\\project\\MiniPremiere\\image\\zju.png");
-//    picture->scaled(pic->size(), Qt::KeepAspectRatio);
-//    pic->setPixmap(*picture);
-//    //pic->setAlignment(Qt::AlignHCenter);
-//
-//    angle += 0.1;
-//    static int i = 1;
-//    cv::Mat mat;
-//
-//    std::string test_string = "../video/test.mp4";
-//    EditableVideo test(test_string);
-//    mat = test.getNextImage();
-//
-//    if(i == 1){
-//        image = FromCVtoQImage(mat);
-//        i == 0;
-//    }
-//
-//    picture = QPixmap::fromImage(image);
-//    picture.scaled(pic->size(), Qt::KeepAspectRatio);
-//    pic->setPixmap(picture);
+    static int amount = 0;
 
+    FetchQImageCommand->Exec();
+
+    if(amount % *framerate == 0 && amount != 0){
+        slider->setValue(slider->value() + 1);
+    }
+    amount++;
 }
 
 void MainWindow::OnClick()
 {
-    static int j = 1;
-    if(j == 1){
-        j = 0;
-        button->setText(tr("暂停"));
-        timer->start(300);
+    static int flag = 0;
+
+    if(!isLoaded){
+        return;
+    }
+
+    if(flag == 1){
+        flag = 0;
+        button->setIcon(QIcon("../image/pause.ico"));
+        timer->start(1000 / *framerate);
     }
     else{
-        j = 1;
-        button->setText(tr("开始"));
+        flag = 1;
+        button->setIcon(QIcon("../image/play.ico"));
         timer->stop();
     }
 }
 
-//void MainWindow::SetOpenFileCommand(std::shared_ptr<Command> OpenFileCommand)
-//{
-//    this->OpenFileCommand = OpenFileCommand;
-//}
+void MainWindow::UpdateQImage()
+{
+    picture = QPixmap::fromImage(*image);
+    picture.scaled(pic->size(), Qt::KeepAspectRatio);
+    pic->setPixmap(picture);
+}
+
+void MainWindow::SetOpenFileCommand(std::shared_ptr<commandBase> OpenFileCommand)
+{
+    this->OpenFileCommand = OpenFileCommand;
+}
+
+void MainWindow::SetFetchQImageCommand(std::shared_ptr<commandBase> FetchQImageCommand){
+    this->FetchQImageCommand = FetchQImageCommand;
+}
+
+void MainWindow::SetQImage(std::shared_ptr<QImage> image)
+{
+    this->image = image;
+}
+
+void MainWindow::SetTimeDuration(std::shared_ptr<int> timeduration)
+{
+    this->timeduration = timeduration;
+}
+
+std::shared_ptr<Notification> MainWindow::GetUpdateViewNotification()
+{
+    return std::static_pointer_cast<Notification>(TheUpdateViewNotification);
+}
 
 //need to be updated
 void MainWindow::OpenOperation()
 {
-    //OpenFileCommand->Setparameters(std::string FilePath);
-    //OpenFileCommand->Exec();
-    qDebug() << "Press Open" << endl;
+    QString filepath = QFileDialog::getOpenFileName(this, tr("Open Video"), ".", tr("Video File(*.avi *.mp4)"));
+    std::string path = filepath.toStdString();
+    OpenFileCommand->SetParameters(path);
+    OpenFileCommand->Exec();
+
+    slider->setMaximum(*timeduration);
+    QString str = QString("%1:%2").arg(*timeduration / 60, 2, 10, QLatin1Char('0')).arg(*timeduration % 60, 2, 10, QLatin1Char('0'));
+
+    qDebug() << filepath << endl;
+
+    isLoaded = 1;
+
+    button->setIcon(QIcon("../image/pause.ico"));
+    timer->start(1000 / *framerate);
 }
 
 void MainWindow::SaveOperation()

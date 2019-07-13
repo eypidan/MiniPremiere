@@ -21,7 +21,8 @@
 #include <QHBoxLayout>
 #include <QSlider>
 #include <QLineEdit>
-
+#include "../common/command.h"
+#include "./Notification/UpdateViewNotification.h"
 
 class MainWindow : public QMainWindow
 {
@@ -37,8 +38,18 @@ public:
     void SetTimer();
     void SetSlider();
     void SetLayer();
+
+    void UpdateQImage();
     //set command
-    //void SetOpenFileCommand(std::shared_ptr<Command>);
+    void SetOpenFileCommand(std::shared_ptr<CommandBase>);
+    void SetFetchQImageCommand(std::shared_ptr<CommandBase>);
+    //set data
+    void SetQImage(std::shared_ptr<QImage>);
+    void SetFrameRate(std::shared_ptr<int>);
+    void SetTimeDuration(std::shared_ptr<int>);
+
+    //get notification
+    std::shared_ptr<Notification> GetUpdateViewNotification();
 
 private slots:
     void OnClick();
@@ -61,7 +72,13 @@ private:
     QTimer *timer;
     QPixmap picture;
 
+    bool isLoaded;
+
     std::shared_ptr<QImage> image;
-    //std::shared_ptr<Command> OpenFileCommand;
+    std::shared_ptr<int> framerate;
+    std::shared_ptr<int> timeduration;
+    std::shared_ptr<CommandBase> OpenFileCommand;
+    std::shared_ptr<CommandBase> FetchQImageCommand;
+    std::shared_ptr<UpdateViewNotification> TheUpdateViewNotification;
 };
 #endif

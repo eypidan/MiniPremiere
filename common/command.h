@@ -1,7 +1,3 @@
-//
-// Created by px on 7/12/2019.
-//
-
 #ifndef COMMAND_H
 #define COMMAND_H
 

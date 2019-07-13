@@ -24,7 +24,7 @@ find_package(Qt5Multimedia REQUIRED)
 find_package(OpenCV)
 
 
-set(SOURCE_FILES ./View/View.cpp ./View/MainWindow.cpp ./View/MainWindow.h)
+set(SOURCE_FILES View.cpp MainWindow.cpp MainWindow.h Notification/UpdateViewNotification.cpp Notification/UpdateViewNotification.h)
 add_executable(MiniPremiere ${SOURCE_FILES})
 
 #target_link_libraries(MiniPremiere Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Multimedia)

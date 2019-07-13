@@ -1,5 +1,5 @@
 class Notification {
 public:
-    Notification();
-    virtual void exec() = 0;
+    Notification(){};
+    virtual void Exec() = 0;
 };
