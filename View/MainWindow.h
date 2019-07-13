@@ -42,11 +42,11 @@ public:
     void UpdateQImage();
     //set command
     void SetOpenFileCommand(std::shared_ptr<commandBase>);
-    void SetGetFrameRateCommand(std::shared_ptr<commandBase>);
-    void SetFetchQimageCommand(std::shared_ptr<commandBase>);
+    void SetFetchQImageCommand(std::shared_ptr<commandBase>);
     //set data
     void SetQImage(std::shared_ptr<QImage>);
     void SetFrameRate(std::shared_ptr<int>);
+    void SetTimeDuration(std::shared_ptr<int>);
 
     //get notification
     std::shared_ptr<Notification> GetUpdateViewNotification();
@@ -72,11 +72,13 @@ private:
     QTimer *timer;
     QPixmap picture;
 
+    bool isLoaded;
+
     std::shared_ptr<QImage> image;
     std::shared_ptr<int> framerate;
+    std::shared_ptr<int> timeduration;
     std::shared_ptr<commandBase> OpenFileCommand;
-    std::shared_ptr<commandBase> GetFrameRateCommand;
-    std::shared_ptr<commandBase> FetchQimageCommand;
+    std::shared_ptr<commandBase> FetchQImageCommand;
     std::shared_ptr<UpdateViewNotification> TheUpdateViewNotification;
 };
 #endif

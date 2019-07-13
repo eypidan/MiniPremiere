@@ -19,6 +19,8 @@ MainWindow::MainWindow():
     SetLayer();
 
     TheUpdateViewNotification = std::make_shared<UpdateViewNotification>(this);
+
+    isLoaded = 0;
 }
 
 void MainWindow::CreateStatusBar()
@@ -140,7 +142,7 @@ void MainWindow::SetLayer()
 void MainWindow::SetSlider()
 {
     slider = new QSlider(Qt::Horizontal);
-    slider->setMaximum(6000);
+    slider->setMaximum(0);
     slider->setMinimum(0);
     slider->setValue(0);
     slider->setFixedSize(QSize(860, 30));
@@ -148,7 +150,7 @@ void MainWindow::SetSlider()
     //slider->setStyleSheet(QString("QSlider::handle{border-radius:10px;}"));
 
     start = new QLineEdit("00:00");
-    end = new QLineEdit("100:00");
+    end = new QLineEdit("00:00");
     start->setStyleSheet(QString("background:transparent;border-style:outset;border-width:0"));
     end->setStyleSheet(QString("background:transparent;border-style:outset;border-width:0"));
     start->setEnabled(false);
@@ -173,9 +175,10 @@ void MainWindow::SetLineEditValue()
 void MainWindow::OnTimer()
 {
     static int amount = 0;
-    //FetchQimageCommand->SetParameters();
-    //FetchQimageCommand->Exec();
-    if(amount % 24 == 0 && amount != 0){
+
+    FetchQImageCommand->Exec();
+
+    if(amount % *framerate == 0 && amount != 0){
         slider->setValue(slider->value() + 1);
     }
     amount++;
@@ -183,11 +186,16 @@ void MainWindow::OnTimer()
 
 void MainWindow::OnClick()
 {
-    static int flag = 1;
+    static int flag = 0;
+
+    if(!isLoaded){
+        return;
+    }
+
     if(flag == 1){
         flag = 0;
         button->setIcon(QIcon("../image/pause.ico"));
-        timer->start(1000/24);
+        timer->start(1000 / *framerate);
     }
     else{
         flag = 1;
@@ -208,12 +216,8 @@ void MainWindow::SetOpenFileCommand(std::shared_ptr<commandBase> OpenFileCommand
     this->OpenFileCommand = OpenFileCommand;
 }
 
-void MainWindow::SetGetFrameRateCommand(std::shared_ptr<commandBase> GetFrameRateCommand){
-    this->GetFrameRateCommand = GetFrameRateCommand;
-}
-
-void MainWindow::SetFetchQimageCommand(std::shared_ptr<commandBase> FetchQimageCommand){
-    this->FetchQimageCommand = FetchQimageCommand;
+void MainWindow::SetFetchQImageCommand(std::shared_ptr<commandBase> FetchQImageCommand){
+    this->FetchQImageCommand = FetchQImageCommand;
 }
 
 void MainWindow::SetQImage(std::shared_ptr<QImage> image)
@@ -221,9 +225,9 @@ void MainWindow::SetQImage(std::shared_ptr<QImage> image)
     this->image = image;
 }
 
-void MainWindow::SetFrameRate(std::shared_ptr<int> framerate)
+void MainWindow::SetTimeDuration(std::shared_ptr<int> timeduration)
 {
-    this->framerate = framerate;
+    this->timeduration = timeduration;
 }
 
 std::shared_ptr<Notification> MainWindow::GetUpdateViewNotification()
@@ -236,12 +240,18 @@ void MainWindow::OpenOperation()
 {
     QString filepath = QFileDialog::getOpenFileName(this, tr("Open Video"), ".", tr("Video File(*.avi *.mp4)"));
     std::string path = filepath.toStdString();
-    //OpenFileCommand->SetParameters(path);
-    //OpenFileCommand->Exec();
+    OpenFileCommand->SetParameters(path);
+    OpenFileCommand->Exec();
 
-    //GetFrameRateCommand->SetParameters();
-    //GetFrameRateCommand->Exec();
+    slider->setMaximum(*timeduration);
+    QString str = QString("%1:%2").arg(*timeduration / 60, 2, 10, QLatin1Char('0')).arg(*timeduration % 60, 2, 10, QLatin1Char('0'));
+
     qDebug() << filepath << endl;
+
+    isLoaded = 1;
+
+    button->setIcon(QIcon("../image/pause.ico"));
+    timer->start(1000 / *framerate);
 }
 
 void MainWindow::SaveOperation()
