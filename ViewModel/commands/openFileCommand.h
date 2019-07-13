@@ -6,23 +6,21 @@
 #define OPENFILECOMMAND_H
 
 #include "../../common/Command.h"
-#include "../../model/Model.h"
-class OpenFileCommand:CommandBase{
-public:
-    void Exec() override{
 
-    }
-    void SetParameters(const std::string path){
-        Para_Path = path;
-    }
+
+class ViewModel;
+
+class OpenFileCommand:public CommandBase{
+private:
+    std::string Para_Path;
+    ViewModel *PtrViewModel;
+public:
+    OpenFileCommand(ViewModel *ptr);
+    void Exec() override;
+    inline void SetParameters(const std::string path);
 };
 
 
-class FetchQimageCommand:CommandBase{
-public:
-    void Exec() override{
 
-    }
-};
 
 #endif //OPENFILECOMMAND_H

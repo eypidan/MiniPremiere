@@ -3,12 +3,14 @@
 
 #include "../model/Model.h"
 #include "./commands/OpenFileCommand.h"
+#include "./commands/FetchQimageCommand.h"
 #include "../common/Notification.h"
 class ViewModel {
 private:
 	std::shared_ptr<QImage>q_image;
 	std::shared_ptr<Model> model;
-
+	std::shared_ptr<cv::Mat> cv_image;
+	std::shared_ptr<EditableVideo> testVideo;
 	std::shared_ptr<OpenFileCommand> opFileCommand;
     std::shared_ptr<FetchQimageCommand> fQimageCommand;
 	std::shared_ptr<Notification> UpdateViewNotification;
@@ -20,24 +22,27 @@ public:
 
 	//command openfile
 	inline std::shared_ptr<CommandBase> GetOpenFileCommand(){
-        return std::dynamic_pointer_cast<CommandBase>(opFileCommand);
+        return std::static_pointer_cast<CommandBase>(opFileCommand);
     }
     inline void ExecOpenFileCommand(std::string &path){
-		opFileCommand->exec();
+		testVideo = model->openFile(path);
 	}
 
     //command FetcgQimage
     inline std::shared_ptr<CommandBase> GetFetchQimageCommand(){
-        return std::dynamic_pointer_cast<CommandBase>(fQimageCommand);
+        return std::static_pointer_cast<CommandBase>(fQimageCommand);
     }
-    void ExecFetchQimageCommand(std::string path);
+    inline void ExecFetchQimageCommand(){
+		cv_image = testVideo->getNextImage();
+	}
 
 	inline void SetUpdateViewNotification(std::shared_ptr<Notification> notification);
 };
 
 ViewModel::ViewModel(){
-	opFileCommand = std::make_shared<OpenFileCommand>();
-	fQimageCommand = std::make_shared<FetchQimageCommand>();
+	model = std::make_shared<Model>();
+	opFileCommand = std::make_shared<OpenFileCommand>(this);
+	fQimageCommand = std::make_shared<FetchQimageCommand>(this);
 }
 
 #endif
