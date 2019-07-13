@@ -106,7 +106,10 @@ void MainWindow::CreatePicLabel()
 
 void MainWindow::CreatePlayButton()
 {
-    button = new QPushButton(tr("开始"));
+    button = new QPushButton();
+    button->setIcon(QIcon("../image/play.ico"));
+    button->setIconSize(QSize(40, 40));
+    button->setStyleSheet(QString("QPushButton{border-radius:64px;}"));
     //layout()->addWidget(button);
     connect(button, SIGNAL(clicked()), this, SLOT(OnClick()));
 }
@@ -169,8 +172,13 @@ void MainWindow::SetLineEditValue()
 
 void MainWindow::OnTimer()
 {
-     //FetchQimageCommand->SetParameters();
-     //FetchQimageCommand->Exec();
+    static int amount = 0;
+    //FetchQimageCommand->SetParameters();
+    //FetchQimageCommand->Exec();
+    if(amount % 24 == 0 && amount != 0){
+        slider->setValue(slider->value() + 1);
+    }
+    amount++;
 }
 
 void MainWindow::OnClick()
@@ -178,12 +186,12 @@ void MainWindow::OnClick()
     static int flag = 1;
     if(flag == 1){
         flag = 0;
-        button->setText(tr("暂停"));
-        timer->start(*framerate);
+        button->setIcon(QIcon("../image/pause.ico"));
+        timer->start(1000/24);
     }
     else{
         flag = 1;
-        button->setText(tr("开始"));
+        button->setIcon(QIcon("../image/play.ico"));
         timer->stop();
     }
 }
