@@ -245,6 +245,11 @@ void MainWindow::OpenOperation()
 {
     QString filepath = QFileDialog::getOpenFileName(this, tr("Open Video"), ".", tr("Video File(*.avi *.mp4)"));
     std::string path = filepath.toStdString();
+
+    if(filepath == nullptr){
+        return;
+    }
+
     OpenFileCommand->SetParameters(path);
     OpenFileCommand->Exec();
 
