@@ -17,6 +17,8 @@ MainWindow::MainWindow():
     SetTimer();
     SetSlider();
     SetLayer();
+
+    TheUpdateViewNotification = std::make_shared<UpdateViewNotification>(this);
 }
 
 void MainWindow::CreateStatusBar()
@@ -167,58 +169,71 @@ void MainWindow::SetLineEditValue()
 
 void MainWindow::OnTimer()
 {
-//    static double angle = 0;
-//
-//    picture = new QPixmap("E:\\C++\\project\\MiniPremiere\\image\\zju.png");
-//    picture->scaled(pic->size(), Qt::KeepAspectRatio);
-//    pic->setPixmap(*picture);
-//    //pic->setAlignment(Qt::AlignHCenter);
-//
-//    angle += 0.1;
-//    static int i = 1;
-//    cv::Mat mat;
-//
-//    std::string test_string = "../video/test.mp4";
-//    EditableVideo test(test_string);
-//    mat = test.getNextImage();
-//
-//    if(i == 1){
-//        image = FromCVtoQImage(mat);
-//        i == 0;
-//    }
-//
-//    picture = QPixmap::fromImage(image);
-//    picture.scaled(pic->size(), Qt::KeepAspectRatio);
-//    pic->setPixmap(picture);
-
+     //FetchQimageCommand->SetParameters();
+     //FetchQimageCommand->Exec();
 }
 
 void MainWindow::OnClick()
 {
-    static int j = 1;
-    if(j == 1){
-        j = 0;
+    static int flag = 1;
+    if(flag == 1){
+        flag = 0;
         button->setText(tr("暂停"));
-        timer->start(300);
+        timer->start(*framerate);
     }
     else{
-        j = 1;
+        flag = 1;
         button->setText(tr("开始"));
         timer->stop();
     }
 }
 
-//void MainWindow::SetOpenFileCommand(std::shared_ptr<Command> OpenFileCommand)
-//{
-//    this->OpenFileCommand = OpenFileCommand;
-//}
+void MainWindow::UpdateQImage()
+{
+    picture = QPixmap::fromImage(*image);
+    picture.scaled(pic->size(), Qt::KeepAspectRatio);
+    pic->setPixmap(picture);
+}
+
+void MainWindow::SetOpenFileCommand(std::shared_ptr<commandBase> OpenFileCommand)
+{
+    this->OpenFileCommand = OpenFileCommand;
+}
+
+void MainWindow::SetGetFrameRateCommand(std::shared_ptr<commandBase> GetFrameRateCommand){
+    this->GetFrameRateCommand = GetFrameRateCommand;
+}
+
+void MainWindow::SetFetchQimageCommand(std::shared_ptr<commandBase> FetchQimageCommand){
+    this->FetchQimageCommand = FetchQimageCommand;
+}
+
+void MainWindow::SetQImage(std::shared_ptr<QImage> image)
+{
+    this->image = image;
+}
+
+void MainWindow::SetFrameRate(std::shared_ptr<int> framerate)
+{
+    this->framerate = framerate;
+}
+
+std::shared_ptr<Notification> MainWindow::GetUpdateViewNotification()
+{
+    return std::static_pointer_cast<Notification>(TheUpdateViewNotification);
+}
 
 //need to be updated
 void MainWindow::OpenOperation()
 {
-    //OpenFileCommand->Setparameters(std::string FilePath);
+    QString filepath = QFileDialog::getOpenFileName(this, tr("Open Video"), ".", tr("Video File(*.avi *.mp4)"));
+    std::string path = filepath.toStdString();
+    //OpenFileCommand->SetParameters(path);
     //OpenFileCommand->Exec();
-    qDebug() << "Press Open" << endl;
+
+    //GetFrameRateCommand->SetParameters();
+    //GetFrameRateCommand->Exec();
+    qDebug() << filepath << endl;
 }
 
 void MainWindow::SaveOperation()

@@ -1,13 +1,19 @@
-//
-// Created by leixiao on 2019/7/12.
-//
-
 #ifndef MINIPREMIERE_UPDATEVIEWNOTIFICATION_H
 #define MINIPREMIERE_UPDATEVIEWNOTIFICATION_H
 
+#include <iostream>
+#include <memory>
+#include "../../common/notification.h"
 
-class UpdateViewNotification {
+class MainWindow;
 
+class UpdateViewNotification : public Notification
+{
+private:
+    MainWindow *mainwindow;
+public:
+    UpdateViewNotification(MainWindow *mainwindow);
+    virtual void Exec();
 };
 
 
