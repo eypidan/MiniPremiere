@@ -5,14 +5,14 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include<string>
+
 class CommandBase{
 protected:
-    std::shared_ptr<Parameters> params;
+    std::string Para_Path;
 public:
     CommandBase();
-    void set_parameters(std::shared_ptr<Parameters> parameters){
-        params = parameters;
-    }
-    virtual void exec() = 0;
+    virtual void SetParameters(const std::string path);
+    virtual void Exec() = 0;
 };
 #endif //COMMAND_H
