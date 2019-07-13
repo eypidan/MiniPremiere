@@ -4,6 +4,7 @@
 #include "../model/Model.h"
 #include "../common/command.h"
 #include "../common/notification.h"
+#include <opencv2/opencv.hpp>
 
 class ViewModel {
 private:
@@ -51,7 +52,14 @@ public:
     }
     inline void ExecFetchQimageCommand(){
 		cv_image = testVideo->getNextImage();
-		q_image = std::make_shared<QImage>((uchar*) cv_image->data, cv_image->cols, cv_image->rows, cv_image->step, QImage::Format_RGB888);
+		cv::Mat cvimage_temp;
+		cv::Mat *normalptr = cv_image.get();
+		//cv::cvtColor
+		cv::cvtColor(*normalptr, cvimage_temp, CV_RGB2BGR);
+		std::cout << "success" << std::endl;
+        QImage qimage_temp((uchar*) cvimage_temp.data, cvimage_temp.cols, cvimage_temp.rows, cvimage_temp.step, QImage::Format_RGB888);
+		qimage_temp.bits();
+        *q_image = qimage_temp;
 		notification->Exec();
 	}
 

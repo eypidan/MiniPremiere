@@ -175,8 +175,10 @@ void MainWindow::SetLineEditValue()
 void MainWindow::OnTimer()
 {
     static int amount = 0;
-
+    std::cout << "succeed before FetchQImageCommand->Exec()" << std::endl;
     FetchQImageCommand->Exec();
+
+    std::cout << "succeed in FetchQImageCommand->Exec()" << std::endl;
 
     if(amount % *framerate == 0 && amount != 0){
         slider->setValue(slider->value() + 1);
@@ -206,9 +208,13 @@ void MainWindow::OnClick()
 
 void MainWindow::UpdateQImage()
 {
-    picture = QPixmap::fromImage(*image);
-    picture.scaled(pic->size(), Qt::KeepAspectRatio);
-    pic->setPixmap(picture);
+//    std::cout << "succeed before UpdateQImage" << std::endl;
+//    picture = QPixmap::fromImage(*image);
+//    std::cout << "succeed after convert" << std::endl;
+//    picture.scaled(pic->size(), Qt::KeepAspectRatio);
+//    std::cout << "succeed after setscaled" << std::endl;
+//    pic->setPixmap(picture);
+//    std::cout << "succeed set pic" << std::endl;
 }
 
 void MainWindow::SetOpenFileCommand(std::shared_ptr<CommandBase> OpenFileCommand)
@@ -253,8 +259,9 @@ void MainWindow::OpenOperation()
     OpenFileCommand->SetParameters(path);
     OpenFileCommand->Exec();
 
-    slider->setMaximum(*timeduration);
-    QString str = QString("%1:%2").arg(*timeduration / 60, 2, 10, QLatin1Char('0')).arg(*timeduration % 60, 2, 10, QLatin1Char('0'));
+    slider->setMaximum(*timeduration / 1000000);
+    QString str = QString("%1:%2").arg(*timeduration / 1000000 / 60, 2, 10, QLatin1Char('0')).arg(*timeduration / 1000000 % 60, 2, 10, QLatin1Char('0'));
+    end->setText(str);
 
     qDebug() << filepath << endl;
 
@@ -262,6 +269,8 @@ void MainWindow::OpenOperation()
 
     button->setIcon(QIcon("../image/pause.ico"));
     timer->start(1000 / *framerate);
+
+    std::cout << "succeed in OpenOperation" << std::endl;
 }
 
 void MainWindow::SaveOperation()
