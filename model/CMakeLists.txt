@@ -23,7 +23,7 @@ set(OpenCV_LIBS opencv_core  opencv_highgui)
 set(ffmpeg_LIBS avcodec avformat avutil avdevice swscale)
 
 
-set(SOURCE_FILES ./testmodel.cpp  ./Model.h  ./EditableVideo.h)
+set(SOURCE_FILES ./testmodel.cpp  ./Model.cpp  ./EditableVideo.cpp)
 #link
 add_executable(model_test ${SOURCE_FILES})
 target_link_libraries(model_test ${OpenCV_LIBS} ${ffmpeg_LIBS} Qt5::Gui)

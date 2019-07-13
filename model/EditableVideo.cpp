@@ -59,7 +59,9 @@ EditableVideo::EditableVideo(std::string srcPath) {
                 this->pCodecContext = pFormatContext->streams[i]->codec;
                 if(avcodec_open2(pCodecContext, pCodec, 0) < 0){ //open video decoder
                     throw "error";
-                }
+            }
+                this->VideoFps = av_q2d(pFormatContext->streams[i]->r_frame_rate);
+                printf("VideoFps is %d",this->VideoFps);
             }
         }
 
