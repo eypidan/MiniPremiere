@@ -1,47 +1,10 @@
 #ifndef VIEWMODEL_H
-<<<<<<< HEAD
 #define VIEWMODEL_H 
-//#include <./view/mainwindow.h>
-#include <./model/Model.h>
-#define framerate = 24;
-class ViewModel 
-{
-    private:
-	std::shared_ptr<EditableVideo> Video;
-    public:
-	ViewModel()= default;
-	~ViewModel(){Video.reset();}
-	std::shared_ptr<EditableVideo> initvideo(const std::string path);
-	std::shared_ptr<cv::Mat> openfile(const std::string path, int nowtime = 0);
-//	std::shared_ptr<cv::Mat> 
-}
-
-std::shared_ptr<EditableVideo> initvideo(const std::string path)
-{
-    Model model;
-    Video = model.openfile(path);
-}
-
-std::shared_ptr<cv::Mat> openfile(const std::string path, int nowtime = 0)
-{
-    int nowframes = nowtime * framerate;
-    std::shared_ptr<cv::Mat> currentmat;
-    initvideo(path);
-    for (int i = 0; i <= nowframes; i++)
-    {
-	currentmat = Video->getNextImage();
-	cv::waitKey(24);
-    }
-
-    return currentmat;
-}
-=======
-#define VIEWMODEL_H
 
 #include "../model/Model.h"
 #include "../common/Command.h"
-
 #include "../common/Notification.h"
+
 class ViewModel {
 private:
     std::shared_ptr <int>VideoFps;
@@ -89,7 +52,7 @@ public:
     inline void ExecFetchQimageCommand(){
 		cv_image = testVideo->getNextImage();
 		q_image = std::make_shared<QImage>((uchar*) cv_image->data, cv_image->cols, cv_image->rows, cv_image->step, QImage::Format_RGB888);
-		notification->exec();
+		notification->Exec();
 	}
 
 	//command FrameRate
@@ -105,8 +68,5 @@ public:
 		this->notification = notification;
 	}
 };
-
-
->>>>>>> Model
 
 #endif
