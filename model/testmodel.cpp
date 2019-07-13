@@ -7,7 +7,7 @@ int main(){
 
     Model testModel;
     std::shared_ptr<EditableVideo> testVideo;
-    testVideo = testModel.openFile("C:\\Users\\px\\Desktop\\MiniPremiere\\test.mp4");
+    testVideo = testModel.openFile("C:\\Users\\px\\Desktop\\test.mp4");
     std::shared_ptr<cv::Mat> testMat;
     for(int i=0;i<500;i++){
         testMat = testVideo->getNextImage();

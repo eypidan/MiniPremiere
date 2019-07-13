@@ -10,4 +10,5 @@ ViewModel::ViewModel(){
     model = std::make_shared<Model>();
     opFileCommand = std::make_shared<OpenFileCommand>(this);
     fQimageCommand = std::make_shared<FetchQimageCommand>(this);
+    q_image = std::make_shared<QImage>();
 }

@@ -27,6 +27,7 @@ class EditableVideo{
 private:
     int64_t duration = 0;
     int64_t currentTime = 0;
+    int VideoFps = 0;
     bool playing = false;  //deprecated
 
     AVPacket        currentPacket;
@@ -48,6 +49,8 @@ public:
     ~EditableVideo();
     std::shared_ptr<cv::Mat> getNextImage();
     inline int64_t getCurrentTime(){return currentTime;}
+    inline GetFps(){return VideoFps;}
+    inline GetDuration(){return duration;}
     //cv::Mat seekImage(int64_t timeStamp);
 };
 #endif //EDITABLEVIDEO_H
