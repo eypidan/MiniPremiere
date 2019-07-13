@@ -26,11 +26,16 @@ set(OpenCV_LIBS opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs)
 # set ffmpeg
 set(ffmpeg_LIBS avcodec avformat avutil avdevice swscale)
 
-
+#aux_source_directory(. SOURCE_FILES)
+#aux_source_directory(./commands SOURCE_FILES)
+#aux_source_directory(../model SOURCE_FILES)
 set(SOURCE_FILES
         ./testViewModel.cpp
         ./commands/OpenFileCommand.cpp
-        ./commands/FetchQimageCommand.cpp)
+        ./commands/FetchQimageCommand.cpp
+        ./ViewModel.cpp
+        ../model/Model.cpp
+        ../model/EditableVideo.cpp)
 #link
 add_executable(view_model_test ${SOURCE_FILES})
 target_link_libraries(view_model_test ${OpenCV_LIBS} ${ffmpeg_LIBS}  Qt5::Gui )

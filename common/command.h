@@ -8,11 +8,8 @@
 #include<string>
 
 class CommandBase{
-protected:
-    std::string Para_Path;
 public:
-    CommandBase();
-    virtual void SetParameters(const std::string path);
+    virtual void SetParameters(const std::string path) = 0;
     virtual void Exec() = 0;
 };
 #endif //COMMAND_H

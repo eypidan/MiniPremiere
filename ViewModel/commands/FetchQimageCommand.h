@@ -13,7 +13,9 @@ private:
     ViewModel *PtrViewModel;
 public:
     FetchQimageCommand(ViewModel *ptr);
-    void Exec() override;
+    ~FetchQimageCommand()= default;
+    virtual void Exec();
+    virtual void SetParameters(const std::string path);
 };
 
 #endif //FETCHQIMAGECOMMAND_H

@@ -2,8 +2,8 @@
 #define VIEWMODEL_H
 
 #include "../model/Model.h"
-#include "./commands/OpenFileCommand.h"
-#include "./commands/FetchQimageCommand.h"
+#include "../common/Command.h"
+
 #include "../common/Notification.h"
 class ViewModel {
 private:
@@ -11,8 +11,8 @@ private:
 	std::shared_ptr<Model> model;
 	std::shared_ptr<cv::Mat> cv_image;
 	std::shared_ptr<EditableVideo> testVideo;
-	std::shared_ptr<OpenFileCommand> opFileCommand;
-    std::shared_ptr<FetchQimageCommand> fQimageCommand;
+	std::shared_ptr<CommandBase> opFileCommand;
+    std::shared_ptr<CommandBase> fQimageCommand;
 	std::shared_ptr<Notification> UpdateViewNotification;
 public:
 	ViewModel();
@@ -36,14 +36,10 @@ public:
 		cv_image = testVideo->getNextImage();
 	}
 
-	inline void SetUpdateViewNotification(std::shared_ptr<Notification> notification);
+	//inline void SetUpdateViewNotification(std::shared_ptr<Notification> notification);
 };
 
-ViewModel::ViewModel(){
-	model = std::make_shared<Model>();
-	opFileCommand = std::make_shared<OpenFileCommand>(this);
-	fQimageCommand = std::make_shared<FetchQimageCommand>(this);
-}
+
 
 #endif
 
