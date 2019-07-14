@@ -58,7 +58,9 @@ EditableVideo::EditableVideo(std::string srcPath) {
                     throw "error";
             }
                 this->VideoFps = (int)av_q2d(pFormatContext->streams[i]->r_frame_rate);
-                this->timeBase = (int64_t(pCodecContext_video->time_base.num) * AV_TIME_BASE) / int64_t(pCodecContext_video->time_base.den);
+                //this->timeBase = (int64_t(pCodecContext_video->time_base.num) * AV_TIME_BASE) / int64_t(pCodecContext_video->time_base.den);
+                int currentFrency = AV_TIME_BASE / this->VideoFps;
+                RealFrequency = av_rescale_q(currentFrency, AV_TIME_BASE_Q, pFormatContext->streams[video_stream_index]->time_base);
                 printf("VideoFps is %d",this->VideoFps);
             }
         }
