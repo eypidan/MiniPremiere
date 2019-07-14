@@ -7,7 +7,6 @@ EditableVideo::~EditableVideo(){
     av_free(currentFrame);
     avcodec_close(pCodecContext_video);
     avformat_close_input(&pFormatContext);
-
 }
 
 EditableVideo::EditableVideo(std::string srcPath) {
@@ -59,8 +58,8 @@ EditableVideo::EditableVideo(std::string srcPath) {
             }
                 this->VideoFps = (int)av_q2d(pFormatContext->streams[i]->r_frame_rate);
                 //this->timeBase = (int64_t(pCodecContext_video->time_base.num) * AV_TIME_BASE) / int64_t(pCodecContext_video->time_base.den);
-                int currentFrency = AV_TIME_BASE / this->VideoFps;
-                RealFrequency = av_rescale_q(currentFrency, AV_TIME_BASE_Q, pFormatContext->streams[video_stream_index]->time_base);
+                //int currentFrency = AV_TIME_BASE / this->VideoFps;
+                //RealFrequency = av_rescale_q(currentFrency, AV_TIME_BASE_Q, pFormatContext->streams[video_stream_index]->time_base);
                 printf("VideoFps is %d",this->VideoFps);
             }
         }
@@ -97,7 +96,7 @@ std::shared_ptr<cv::Mat> EditableVideo::getNextImage() {
                     ret = avcodec_receive_frame(pCodecContext_video, currentFrame);
                     if (ret == AVERROR(EAGAIN))// || ret == AVERROR_EOF
                         break;
-                    static struct SwsContext *img_convert_ctx;
+
                     if (img_convert_ctx == NULL) {
                         int w = pCodecContext_video->width;
                         int h = pCodecContext_video->height;
@@ -114,6 +113,7 @@ std::shared_ptr<cv::Mat> EditableVideo::getNextImage() {
                     CopyDate(currentFrameRGB, pCodecContext_video->width, pCodecContext_video->height,
                              currentPacket.pts - prepts);
                     prepts = currentPacket.pts;
+                    count++;
                     return currentMatPointer;
                 }
                 continue;
@@ -121,6 +121,7 @@ std::shared_ptr<cv::Mat> EditableVideo::getNextImage() {
             av_packet_unref(&currentPacket);
         }
         else{
+            printf("\n\ncount : %d\n",count);
             std::shared_ptr<cv::Mat> blackPhoto = std::make_shared<cv::Mat>(cv::Size(pCodecContext_video->width, pCodecContext_video->height), CV_8UC3, cv::Scalar(0));
             currentMatPointer = blackPhoto;
             return currentMatPointer;
