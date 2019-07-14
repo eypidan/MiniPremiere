@@ -26,7 +26,7 @@ extern "C"{
 class EditableVideo{
 private:
     int64_t duration = 0;
-    int64_t currentTime = 0;
+    int64_t timeBase = 0;
     int VideoFps = 0;
     bool playing = false;  //deprecated
 
@@ -45,14 +45,13 @@ private:
     uint8_t         *buffer;
 
     void CopyDate(AVFrame *pFrame,int width,int height,int64_t time);
-    static void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame);
 public:
     explicit EditableVideo(std::string srcPath);
     ~EditableVideo();
     std::shared_ptr<cv::Mat> getNextImage();
-    inline int64_t getCurrentTime(){return currentTime;}
+
     inline int GetFps(){return VideoFps;}
     inline int64_t GetDuration(){return duration;}
-    //cv::Mat seekImage(int64_t timeStamp);
+    void seekImage(int timeStamp);
 };
 #endif //EDITABLEVIDEO_H

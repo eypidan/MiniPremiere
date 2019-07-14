@@ -63,14 +63,11 @@ public:
 		notification->Exec();
 	}
 
-	//command FrameRate
-//	inline std::shared_ptr<CommandBase> GetFrameRateCommand() {
-//		return std::static_pointer_cast<CommandBase>(frameRateCommand);
-//	}
-//
-//	inline void ExecFrameRateCommand(){
-//        VideoFps = testVideo->GetFps();
-//	}
+	//command RefreshTimeStamp
+	inline void ExecRefreshTimeStampCommand(int time){
+		testVideo->seekImage(time);
+		notification->Exec();
+	}
 
 	inline void SetUpdateViewNotification(std::shared_ptr<Notification> notification){
 		this->notification = notification;

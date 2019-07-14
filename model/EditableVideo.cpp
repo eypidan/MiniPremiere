@@ -23,7 +23,6 @@ EditableVideo::EditableVideo(std::string srcPath) {
 
 
     this->duration = pFormatContext->duration;
-    this->currentTime = 0;
     this->playing = false;
     this->currentFrame = av_frame_alloc();
     this->currentFrameRGB = av_frame_alloc();
@@ -58,7 +57,8 @@ EditableVideo::EditableVideo(std::string srcPath) {
                 if(avcodec_open2(pCodecContext_video, pCodec, 0) < 0){ //open video decoder
                     throw "error";
             }
-                this->VideoFps = av_q2d(pFormatContext->streams[i]->r_frame_rate);
+                this->VideoFps = (int)av_q2d(pFormatContext->streams[i]->r_frame_rate);
+                this->timeBase = (int64_t(pCodecContext_video->time_base.num) * AV_TIME_BASE) / int64_t(pCodecContext_video->time_base.den);
                 printf("VideoFps is %d",this->VideoFps);
             }
         }
@@ -148,25 +148,9 @@ void EditableVideo::CopyDate(AVFrame *pFrame, int width, int height, int64_t tim
     currentMatPointer = frameImage;
 
 }
-
-void EditableVideo::SaveFrame(AVFrame *pFrame, int width, int height, int iFrame) {
-    FILE *pFile;
-    char szFilename[32];
-    int  y;
-
-    // Open file
-    sprintf(szFilename, "frame%d.ppm", iFrame);
-    pFile=fopen(szFilename, "wb");
-    if(pFile==NULL)
-        return;
-
-    // Write header
-    fprintf(pFile, "P6\n%d %d\n255\n", width, height);
-
-    // Write pixel data
-    for(y=0; y<height; y++)
-        fwrite(pFrame->data[0]+y*pFrame->linesize[0], 1, width*3, pFile);
-
-    // Close file
-    fclose(pFile);
+void EditableVideo::seekImage(int timeStamp) {
+    int64_t seekTime_us = timeStamp * AV_TIME_BASE; //seekTime_us:us
+    int64_t targetFrame = av_rescale_q(seekTime_us, AV_TIME_BASE_Q, pFormatContext->streams[video_stream_index]->time_base);
+    if(av_seek_frame(this->pFormatContext, this->video_stream_index, targetFrame, AVSEEK_FLAG_BACKWARD) < 0)
+        printf("av_seek_frame failed.");
 }
