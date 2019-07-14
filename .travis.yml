@@ -46,20 +46,22 @@ script:
   - ctest
 
 before_deploy:
+  - export TRAVIS_TAG="1.0.$TRAVIS_BUILD_NUMBER"
   - git config --global user.name "$USER_NAME"
-  - git config --global user.email "$USER_EMAIL"
-  - git tag $GIT_TAG -a -m "Generated tag from TravisCI build $GIT_TAG"
+  - git config --global user.email "$USER_EMAIL" 
+  - git tag "$TRAVIS_TAG" "$TRAVIS_COMMIT"
 
 deploy:
   provider: releases
-  api_key: $GIT_TOKEN
+  tag_name: $TRAVIS_TAG
+  target_commitish: $TRAVIS_COMMIT
+  overwirte: true
+  api_key: $GIT_TOKEN 
+  file_glob: true
   file:
-    - MiniPreimere
-  name: MiniPremiere-$GIT_TAG
+    - MiniPreimere 
+  name: MiniPlayer-$TRAVIS_TAG
   skip-cleanup: true
   on:
-    tags: true
-    repo: eypidan/MiniPremiere
-    branches:
-      only:
-        - master
+      branch: master
+      repo: eypidan/MiniPremiere
