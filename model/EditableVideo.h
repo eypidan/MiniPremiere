@@ -25,12 +25,13 @@ extern "C"{
 
 class EditableVideo{
 private:
+    int count= 0;
     int64_t duration = 0;
     //int64_t timeBase = 0;
     int VideoFps = 0;
     int RealFrequency =0;
     bool playing = false;  //deprecated
-
+    struct SwsContext *img_convert_ctx = nullptr;
     AVPacket        currentPacket;
     AVFormatContext *pFormatContext = nullptr;
     AVFrame         *currentFrame;
@@ -51,7 +52,7 @@ public:
     ~EditableVideo();
     std::shared_ptr<cv::Mat> getNextImage();
 
-    inline int GetFps(){return RealFrequency;}
+    inline int GetFps(){return VideoFps;}
     inline int64_t GetDuration(){return duration;}
     void seekImage(int timeStamp);
 };

@@ -11,7 +11,7 @@ class Model {
 private:
     std::shared_ptr<EditableVideo> currentVideo;
 public:
-    Model()= default;
+    inline Model() = default;
     ~Model(){currentVideo.reset();}
     std::shared_ptr<EditableVideo> openFile(const std::string path);
 };
