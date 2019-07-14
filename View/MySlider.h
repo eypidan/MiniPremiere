@@ -3,15 +3,11 @@
 
 #include <QSlider>
 #include <QMouseEvent>
-#include "MainWindow.h"
 
 class MySlider : public QSlider
 {
-private:
-    MainWindow *mainwindow;
-
 public:
-    MySlider(MainWindow *mainwindow);
+    MySlider();
 
 protected:
     void mousePressEvent(QMouseEvent *ev);

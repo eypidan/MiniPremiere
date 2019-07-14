@@ -158,7 +158,7 @@ void MainWindow::SetLayer()
 
 void MainWindow::SetSlider()
 {
-    slider = new QSlider(Qt::Horizontal);
+    slider = new MySlider();
     slider->setOrientation(Qt::Horizontal);
     slider->setMaximum(0);
     slider->setMinimum(0);
@@ -206,7 +206,6 @@ void MainWindow::OnTimer()
         timer->stop();
         start->setText(QString("00:00"));
         button->setIcon(QIcon("../View/image/play.png"));
-        isLoaded = false;
         isPlay = false;
     }
 }
@@ -216,6 +215,10 @@ void MainWindow::OnClick()
     static int flag = 0;
 
     if(!isLoaded){
+        return;
+    }
+
+    if(!isPlay){
         TimeJumpCommand->SetParameters(0);
         timer->stop();
         TimeJumpCommand->Exec();
@@ -224,7 +227,7 @@ void MainWindow::OnClick()
     if(flag == 1){
         flag = 0;
         button->setIcon(QIcon("../View/image/pause.png"));
-        timer->start(500 / *framerate);
+        timer->start(1000 / *framerate);
         isPlay = true;
     }
     else{
@@ -236,9 +239,9 @@ void MainWindow::OnClick()
 
 void MainWindow::ForwardFiveSec()
 {
-//    if(!isLoaded){
-//        return;
-//    }
+    if(!isLoaded){
+        return;
+    }
 
     int nowtime = slider->value();
     int jumptime = nowtime + 5;
@@ -258,9 +261,9 @@ void MainWindow::ForwardFiveSec()
 
 void MainWindow::BackFiveSec()
 {
-//    if(!isLoaded){
-//        return;
-//    }
+    if(!isLoaded){
+        return;
+    }
 
     int nowtime = slider->value();
     int jumptime = nowtime - 5;
@@ -288,7 +291,7 @@ void MainWindow::UpdateQImage()
 void MainWindow::RestartTimer()
 {
     button->setIcon(QIcon("../View/image/pause.png"));
-    timer->start(500 / *framerate);
+    timer->start(1000 / *framerate);
     isPlay = true;
 }
 
@@ -358,7 +361,7 @@ void MainWindow::OpenOperation()
     isLoaded = true;
 
     button->setIcon(QIcon("../View/image/pause.png"));
-    timer->start(500 / *framerate);
+    timer->start(1000 / *framerate);
     isPlay = true;
 }
 

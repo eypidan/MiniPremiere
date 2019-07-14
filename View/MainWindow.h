@@ -25,6 +25,7 @@
 #include "../common/command.h"
 #include "./Notification/UpdateViewNotification.h"
 #include "./Notification/UpdateTimeStampNotification.h"
+#include "MySlider.h"
 
 class MainWindow : public QMainWindow
 {
@@ -72,7 +73,7 @@ private:
     QPushButton *back;
     QPushButton *forward;
     QLabel *pic;
-    QSlider *slider;
+    MySlider *slider;
     QLineEdit *start;
     QLineEdit *end;
     QTimer *timer;
