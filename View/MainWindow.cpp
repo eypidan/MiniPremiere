@@ -21,7 +21,7 @@ MainWindow::MainWindow():
     timestamp = std::make_shared<int>();
     TheUpdateViewNotification = std::make_shared<UpdateViewNotification>(this);
 
-    isLoaded = 0;
+    isLoaded = false;
 }
 
 void MainWindow::CreateStatusBar()
@@ -47,22 +47,6 @@ void MainWindow::CreateMenuAndToolBar()
     fileMenu->addAction(openAction);
     fileTool->addAction(openAction);
     connect(openAction, &QAction::triggered, this, &MainWindow::OpenOperation);
-
-    //save file as current file action
-    QAction *saveAction = new QAction(QIcon("../image/save.png"), tr("Save"), this);
-    saveAction->setShortcuts(QKeySequence::Save);
-    saveAction->setStatusTip(tr("Save the file as current file"));
-    fileMenu->addAction(saveAction);
-    //fileTool->addAction(saveAction);
-    connect(saveAction, &QAction::triggered, this, &MainWindow::SaveOperation);
-
-    //save file as another file action
-    QAction *saveAsAction = new QAction(QIcon("../image/saveas.png"), tr("Save As..."), this);
-    saveAsAction->setShortcuts(QKeySequence::SaveAs);
-    saveAsAction->setStatusTip(tr("Save the file as another file"));
-    fileMenu->addAction(saveAsAction);
-    //fileTool->addAction(saveAsAction);
-    connect(saveAsAction, &QAction::triggered, this, &MainWindow::SaveAsOperation);
 
     //add a separator before "exit" in menu
     fileMenu->addSeparator();
@@ -221,7 +205,7 @@ void MainWindow::OnTimer()
         timer->stop();
         start->setText(QString("00:00"));
         button->setIcon(QIcon("../View/image/play.png"));
-        isLoaded = 0;
+        isLoaded = false;
     }
 }
 
@@ -247,15 +231,21 @@ void MainWindow::OnClick()
 
 void MainWindow::BackFiveSec()
 {
+    if(!isLoaded){
+        return;
+    }
+
     int nowtime = slider->value();
     int jumptime = nowtime + 5;
 
     if(jumptime >= *timeduration / 1000000){
-        *timestamp = *timeduration / 1000000;
+        TimeJumpCommand->SetParameters(jumptime);
     }
     else{
-        *timestamp = jumptime;
+        TimeJumpCommand->SetParameters(jumptime);
     }
+
+    slider->setValue(jumptime);
 
     timer->stop();
     TimeJumpCommand->Exec();
@@ -263,15 +253,21 @@ void MainWindow::BackFiveSec()
 
 void MainWindow::ForwardFiveSec()
 {
+    if(!isLoaded){
+        return;
+    }
+
     int nowtime = slider->value();
     int jumptime = nowtime - 5;
 
     if(jumptime < 0){
-        *timestamp = 0;
+        TimeJumpCommand->SetParameters(jumptime);
     }
     else{
-        *timestamp = jumptime;
+        TimeJumpCommand->SetParameters(jumptime);
     }
+
+    slider->setValue(jumptime);
 
     timer->stop();
     TimeJumpCommand->Exec();
@@ -343,7 +339,7 @@ void MainWindow::OpenOperation()
         timer->stop();
         start->setText(QString("00:00"));
         button->setIcon(QIcon("../View/image/play.png"));
-        isLoaded = 0;
+        isLoaded = false;
     }
 
     OpenFileCommand->SetParameters(path);
@@ -355,26 +351,14 @@ void MainWindow::OpenOperation()
 
     qDebug() << filepath << endl;
 
-    isLoaded = 1;
+    isLoaded = true;
 
     button->setIcon(QIcon("../View/image/pause.png"));
     timer->start(500 / *framerate);
 }
 
-void MainWindow::SaveOperation()
-{
-    qDebug() << "Press Save" << endl;
-}
-
-void MainWindow::SaveAsOperation()
-{
-    qDebug() << "Press Save As" << endl;
-}
-
 void MainWindow::ExitOperation()
 {
-    qDebug() << "Press Exit" << endl;
-
     switch(QMessageBox::question(this, tr("Exit"), tr("Do you really want to exit?"), QMessageBox::Yes | QMessageBox::No)){
         case QMessageBox::Yes:
             exit(0);
@@ -387,8 +371,6 @@ void MainWindow::ExitOperation()
 
 void MainWindow::HelpOperation()
 {
-    qDebug() << "Press Help" << endl;
-
     const char message[] = "<h2>Supported:</h2>Play video</br><h2>Not supported yet:</h2>The audio<br/>The procedure control";
     QMessageBox helpmessage(QMessageBox::NoIcon, "Help", message);
     QPixmap helppic("../View/image/help.png");

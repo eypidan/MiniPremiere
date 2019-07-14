@@ -63,8 +63,6 @@ private slots:
     void OnTimer();
     void SetLineEditValue();
     void OpenOperation();
-    void SaveOperation();
-    void SaveAsOperation();
     void ExitOperation();
     void HelpOperation();
     void AboutUsOperation();
@@ -82,7 +80,6 @@ private:
 
     bool isLoaded;
 
-    std::shared_ptr<int> timestamp;
     std::shared_ptr<QImage> image;
     std::shared_ptr<int> framerate;
     std::shared_ptr<int> timeduration;
