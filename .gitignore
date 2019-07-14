@@ -9,7 +9,7 @@ CTestTestfile.cmake
 Debug
 output/*
 .vs
-.vscode/*
+.vscode/
 *.index
 *.db
 *.xml
