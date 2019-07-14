@@ -16,8 +16,10 @@ private:
 	std::shared_ptr<EditableVideo> testVideo;
 	std::shared_ptr<CommandBase> opFileCommand;
     std::shared_ptr<CommandBase> fQimageCommand;
+    std::shared_ptr<CommandBase> refreshTimeStampCommand;
 //    std::shared_ptr<CommandBase> frameRateCommand;
 	std::shared_ptr<Notification> notification;
+    std::shared_ptr<Notification> notification_jump;
 public:
 	ViewModel();
 	inline void Bind(std::shared_ptr<Model> &newmodel){
@@ -64,9 +66,12 @@ public:
 	}
 
 	//command RefreshTimeStamp
+	inline std::shared_ptr<CommandBase> GetRefreshTimeStampCommand(){
+        return std::static_pointer_cast<CommandBase>(refreshTimeStampCommand);
+	}
 	inline void ExecRefreshTimeStampCommand(int time){
 		testVideo->seekImage(time);
-		notification->Exec();
+        notification_jump->Exec();
 	}
 
 	inline void SetUpdateViewNotification(std::shared_ptr<Notification> notification){
