@@ -28,8 +28,6 @@ EditableVideo::EditableVideo(std::string srcPath) {
 
     //malloc a part of memory to store original data while converting
 
-
-    printf("format %s, duration %lld us, bit_rate %lld", pFormatContext->iformat->name, pFormatContext->duration, pFormatContext->bit_rate);
     if (avformat_find_stream_info(pFormatContext,  nullptr) < 0) {
         printf("ERROR could not get the stream info");
         exit(1);
@@ -60,7 +58,6 @@ EditableVideo::EditableVideo(std::string srcPath) {
                 //this->timeBase = (int64_t(pCodecContext_video->time_base.num) * AV_TIME_BASE) / int64_t(pCodecContext_video->time_base.den);
                 //int currentFrency = AV_TIME_BASE / this->VideoFps;
                 //RealFrequency = av_rescale_q(currentFrency, AV_TIME_BASE_Q, pFormatContext->streams[video_stream_index]->time_base);
-                printf("VideoFps is %d",this->VideoFps);
             }
         }
 
@@ -70,11 +67,7 @@ EditableVideo::EditableVideo(std::string srcPath) {
                 this->audio_stream_index = i;
             }
             this->pCodecContext_audio = pFormatContext->streams[i]->codec;
-            printf("Audio Codec: %d channels, sample rate %d", pLocalCodecParameters->channels, pLocalCodecParameters->sample_rate);
         }
-
-        // print its name, id and bitrate
-        //printf("\tCodec %s ID %d bit_rate %lld", pLocalCodec->name, pLocalCodec->id, pCodecParameters->bit_rate);
     }
 
     numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecContext_video->width, pCodecContext_video->height);
@@ -121,7 +114,6 @@ std::shared_ptr<cv::Mat> EditableVideo::getNextImage() {
             av_packet_unref(&currentPacket);
         }
         else{
-            printf("\n\ncount : %d\n",count);
             std::shared_ptr<cv::Mat> blackPhoto = std::make_shared<cv::Mat>(cv::Size(pCodecContext_video->width, pCodecContext_video->height), CV_8UC3, cv::Scalar(0));
             currentMatPointer = blackPhoto;
             return currentMatPointer;

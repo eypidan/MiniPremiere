@@ -202,6 +202,7 @@ void MainWindow::OnTimer()
 
     //play over
     if(slider->value() == *timeduration / 1000000 && amount == *framerate){
+        amount = 0;
         slider->setValue(0);
         timer->stop();
         start->setText(QString("00:00"));
