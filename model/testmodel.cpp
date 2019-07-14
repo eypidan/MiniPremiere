@@ -7,8 +7,9 @@ int main(){
 
     Model testModel;
     std::shared_ptr<EditableVideo> testVideo;
-    testVideo = testModel.openFile("C:\\Users\\px\\Downloads\\test.mp4");
+    testVideo = testModel.openFile("C:\\Users\\px\\Downloads\\lala.mp4");
     std::shared_ptr<cv::Mat> testMat;
+    testVideo->seekImage(60);
     for(int i=0;i<1500;i++){
         testMat = testVideo->getNextImage();
         cv::namedWindow("Video", CV_WINDOW_AUTOSIZE);
