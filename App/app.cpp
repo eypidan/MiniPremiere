@@ -14,9 +14,10 @@ App::App()
 
     mainwindow->SetFetchQImageCommand(viewmodel->GetFetchQimageCommand());
     mainwindow->SetOpenFileCommand(viewmodel->GetOpenFileCommand());
+    mainwindow->SetTimeJumpCommand(viewmodel->GetRefreshTimeStampCommand());
 
     viewmodel->SetUpdateViewNotification(mainwindow->GetUpdateViewNotification());
-
+    viewmodel->SetUpdateTimeStampNotification(mainwindow->GetUpdateTimeStampNotification());
 }
 void App::run()
 {

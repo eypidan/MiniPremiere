@@ -19,6 +19,7 @@ MainWindow::MainWindow():
     SetLayer();
 
     TheUpdateViewNotification = std::make_shared<UpdateViewNotification>(this);
+    TheUpdateTimeStampNotification = std::make_shared<UpdateTimeStampNotification>(this);
 
     isLoaded = false;
 }
@@ -228,7 +229,7 @@ void MainWindow::OnClick()
     }
 }
 
-void MainWindow::BackFiveSec()
+void MainWindow::ForwardFiveSec()
 {
     if(!isLoaded){
         return;
@@ -250,7 +251,7 @@ void MainWindow::BackFiveSec()
     TimeJumpCommand->Exec();
 }
 
-void MainWindow::ForwardFiveSec()
+void MainWindow::BackFiveSec()
 {
     if(!isLoaded){
         return;

@@ -14,3 +14,6 @@ void OpenFileCommand::Exec() {
 void OpenFileCommand::SetParameters(const std::string path) {
     this->Para_Path = path;
 }
+void OpenFileCommand::SetParameters(int val){
+
+}

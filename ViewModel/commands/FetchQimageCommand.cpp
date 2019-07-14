@@ -15,3 +15,7 @@ void FetchQimageCommand::Exec() {
 void FetchQimageCommand::SetParameters(const std::string path) {
     ;
 }
+
+void FetchQimageCommand::SetParameters(int val){
+
+}

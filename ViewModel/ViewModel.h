@@ -77,6 +77,10 @@ public:
 	inline void SetUpdateViewNotification(std::shared_ptr<Notification> notification){
 		this->notification = notification;
 	}
+
+    inline void SetUpdateTimeStampNotification(std::shared_ptr<Notification> notification_jump){
+        this->notification_jump = notification_jump;
+    }
 };
 
 #endif

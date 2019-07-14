@@ -19,6 +19,7 @@ public:
     ~OpenFileCommand()= default;
     virtual void Exec();
     virtual void SetParameters(const std::string path);
+    virtual void SetParameters(int val);
 };
 
 

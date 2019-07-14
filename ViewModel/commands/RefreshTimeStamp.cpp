@@ -11,6 +11,9 @@ RefreshTimeStamp::RefreshTimeStamp(ViewModel *ptr) {
 void RefreshTimeStamp::SetParameters(int stamptime) {
     StampTime = stamptime;
 }
+void RefreshTimeStamp::SetParameters(const std::string str){
+
+}
 void RefreshTimeStamp::Exec() {
     PtrViewModel->ExecRefreshTimeStampCommand(StampTime);
 }

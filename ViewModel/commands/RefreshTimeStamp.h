@@ -17,6 +17,7 @@ public:
     ~RefreshTimeStamp()= default;
     virtual void Exec();
     virtual void SetParameters(int stamptime);
+    virtual void SetParameters(const std::string str);
 };
 
 
