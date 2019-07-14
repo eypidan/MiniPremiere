@@ -79,6 +79,7 @@ private:
     QPixmap picture;
 
     bool isLoaded;
+    bool isPlay;
 
     std::shared_ptr<QImage> image;
     std::shared_ptr<int> framerate;

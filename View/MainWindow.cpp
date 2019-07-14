@@ -22,6 +22,7 @@ MainWindow::MainWindow():
     TheUpdateTimeStampNotification = std::make_shared<UpdateTimeStampNotification>(this);
 
     isLoaded = false;
+    isPlay = false;
 }
 
 void MainWindow::CreateStatusBar()
@@ -206,6 +207,7 @@ void MainWindow::OnTimer()
         start->setText(QString("00:00"));
         button->setIcon(QIcon("../View/image/play.png"));
         isLoaded = false;
+        isPlay = false;
     }
 }
 
@@ -214,13 +216,16 @@ void MainWindow::OnClick()
     static int flag = 0;
 
     if(!isLoaded){
-        return;
+        TimeJumpCommand->SetParameters(0);
+        timer->stop();
+        TimeJumpCommand->Exec();
     }
 
     if(flag == 1){
         flag = 0;
         button->setIcon(QIcon("../View/image/pause.png"));
-        timer->start(100 / *framerate);
+        timer->start(500 / *framerate);
+        isPlay = true;
     }
     else{
         flag = 1;
@@ -231,9 +236,9 @@ void MainWindow::OnClick()
 
 void MainWindow::ForwardFiveSec()
 {
-    if(!isLoaded){
-        return;
-    }
+//    if(!isLoaded){
+//        return;
+//    }
 
     int nowtime = slider->value();
     int jumptime = nowtime + 5;
@@ -253,9 +258,9 @@ void MainWindow::ForwardFiveSec()
 
 void MainWindow::BackFiveSec()
 {
-    if(!isLoaded){
-        return;
-    }
+//    if(!isLoaded){
+//        return;
+//    }
 
     int nowtime = slider->value();
     int jumptime = nowtime - 5;
@@ -284,6 +289,7 @@ void MainWindow::RestartTimer()
 {
     button->setIcon(QIcon("../View/image/pause.png"));
     timer->start(500 / *framerate);
+    isPlay = true;
 }
 
 void MainWindow::SetOpenFileCommand(std::shared_ptr<CommandBase> OpenFileCommand)
@@ -349,12 +355,11 @@ void MainWindow::OpenOperation()
     QString str = QString("%1:%2").arg(*timeduration / 1000000 / 60, 2, 10, QLatin1Char('0')).arg(*timeduration / 1000000 % 60, 2, 10, QLatin1Char('0'));
     end->setText(str);
 
-    qDebug() << filepath << endl;
-
     isLoaded = true;
 
     button->setIcon(QIcon("../View/image/pause.png"));
     timer->start(500 / *framerate);
+    isPlay = true;
 }
 
 void MainWindow::ExitOperation()
