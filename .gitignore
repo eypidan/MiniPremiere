@@ -15,7 +15,7 @@ output/*
 *.xml
 *.mp4
 *.struct
-.idea/*
+.idea/
 cmake-build-debug
 model/.idea/*
 *.log
