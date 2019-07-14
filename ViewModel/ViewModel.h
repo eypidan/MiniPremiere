@@ -56,9 +56,7 @@ public:
 		cv::Mat *normalptr = cv_image.get();
 		cv::namedWindow("Video", CV_WINDOW_AUTOSIZE);
 		cv::imshow("Video", *cv_image);
-		//cv::cvtColor
 		cv::cvtColor(*normalptr, cvimage_temp, CV_BGR2RGB);
-		std::cout << "success" << std::endl;
         QImage qimage_temp((uchar*) cvimage_temp.data, cvimage_temp.cols, cvimage_temp.rows, cvimage_temp.step, QImage::Format_RGB888);
 		qimage_temp.bits();
         *q_image = qimage_temp;

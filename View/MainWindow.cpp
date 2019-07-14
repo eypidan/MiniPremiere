@@ -28,7 +28,7 @@ void MainWindow::CreateStatusBar()
     QLabel *statusLabel = new QLabel();
     //statusLabel->setFrameShadow()
     QPalette palette(statusLabel->palette());
-    palette.setColor(QPalette::Window, Qt::black);
+    palette.setColor(QPalette::Window, Qt::gray);
     statusLabel->setPalette(palette);
     statusBar()->addWidget(statusLabel);
     statusBar()->setStyleSheet(QString("QStatusBar::item{border:0px;}"));
@@ -41,7 +41,7 @@ void MainWindow::CreateMenuAndToolBar()
     QToolBar *fileTool = addToolBar(tr("File"));
 
     //open file action
-    QAction *openAction = new QAction(QIcon("../image/open.png"), tr("Open..."), this);
+    QAction *openAction = new QAction(QIcon("../View/image/open.png"), tr("Open..."), this);
     openAction->setShortcuts(QKeySequence::Open);
     openAction->setStatusTip(tr("Open a vedio file"));
     fileMenu->addAction(openAction);
@@ -96,12 +96,15 @@ void MainWindow::CreateMenuAndToolBar()
 //for test
 void MainWindow::CreatePicLabel()
 {
-    pic = new QLabel();
+    pic = new QLabel(tr("MiniPlayer"));
+    pic->setAlignment(Qt::AlignCenter);
+    pic->setFont(QFont("Microsoft YaHei", 40, 75));
     QPalette pale(pic->palette());
-    pale.setColor(QPalette::Window, Qt::black);
+    pale.setColor(QPalette::Window, qRgb(100,100,100));
+    pale.setColor(QPalette::WindowText, qRgb(150,150,150));
     pic->setPalette(pale);
     pic->setAutoFillBackground(true);
-
+    pic->setMaximumSize(1350, 540);
     pic->setScaledContents(true);
     //layout()->addWidget(pic);
 }
@@ -109,11 +112,21 @@ void MainWindow::CreatePicLabel()
 void MainWindow::CreatePlayButton()
 {
     button = new QPushButton();
-    button->setIcon(QIcon("../View/image/play.ico"));
+    button->setIcon(QIcon("../View/image/play.png"));
     button->setIconSize(QSize(40, 40));
-    button->setStyleSheet(QString("QPushButton{border-radius:64px;}"));
+    button->setStyleSheet(QString("QPushButton{border-radius:35px;}"));
     //layout()->addWidget(button);
     connect(button, SIGNAL(clicked()), this, SLOT(OnClick()));
+
+    speeddown = new QPushButton();
+    speeddown->setIcon(QIcon("../View/image/speeddown.png"));
+    speeddown->setIconSize(QSize(40, 40));
+    speeddown->setStyleSheet(QString("QPushButton{border-radius:35px;}"));
+
+    speedup = new QPushButton();
+    speedup->setIcon(QIcon("../View/image/speedup.png"));
+    speedup->setIconSize(QSize(40, 40));
+    speedup->setStyleSheet(QString("QPushButton{border-radius:35px;}"));
 }
 
 void MainWindow::SetTimer()
@@ -127,6 +140,8 @@ void MainWindow::SetLayer()
     QWidget *widget = new QWidget(this);
     QHBoxLayout *hLayout = new QHBoxLayout();
     QVBoxLayout *vLayout = new QVBoxLayout();
+    QHBoxLayout *hLayout_button = new QHBoxLayout();
+
 
     hLayout->addWidget(start);
     hLayout->addWidget(slider);
@@ -134,7 +149,15 @@ void MainWindow::SetLayer()
 
     vLayout->addWidget(pic);
     vLayout->addLayout(hLayout);
-    vLayout->addWidget(button);
+
+    hLayout_button->addStretch();
+    hLayout_button->addWidget(speeddown);
+    hLayout_button->addWidget(button);
+    hLayout_button->addWidget(speedup);
+    hLayout_button->addStretch();
+    hLayout_button->setSpacing(10);
+
+    vLayout->addLayout(hLayout_button);
     widget->setLayout(vLayout);
     setCentralWidget(widget);
 }
@@ -142,11 +165,11 @@ void MainWindow::SetLayer()
 void MainWindow::SetSlider()
 {
     slider = new QSlider(Qt::Horizontal);
+    slider->setOrientation(Qt::Horizontal);
     slider->setMaximum(0);
     slider->setMinimum(0);
     slider->setValue(0);
-    //slider->setSingleStep(1);
-    //slider->setStyleSheet(QString("QSlider::handle{border-radius:10px;}"));
+    slider->setStyleSheet(QString("QSlider::handle:horizontal{border:0;width: 15px;margin: -7px -7px -7px -7px;color:#808080} QSlider::sub-page:horizontal{background: qlineargradient(spread:pad, x1:1, y1:0, x2:0, y2:0, stop:0 #808080, stop:0.25 #808080, stop:0.5 #808080, stop:1 #808080);}"));
 
     start = new QLineEdit("00:00");
     end = new QLineEdit("00:00");
@@ -174,10 +197,8 @@ void MainWindow::SetLineEditValue()
 void MainWindow::OnTimer()
 {
     static int amount = 0;
-    std::cout << "succeed before FetchQImageCommand->Exec()" << std::endl;
-    FetchQImageCommand->Exec();
 
-    std::cout << "succeed in FetchQImageCommand->Exec()" << std::endl;
+    FetchQImageCommand->Exec();
 
     if(amount == *framerate && amount != 0){
         amount = 0;
@@ -190,7 +211,7 @@ void MainWindow::OnTimer()
         slider->setValue(0);
         timer->stop();
         start->setText(QString("00:00"));
-        button->setIcon(QIcon("../View/image/play.ico"));
+        button->setIcon(QIcon("../View/image/play.png"));
         isLoaded = 0;
     }
 }
@@ -205,25 +226,21 @@ void MainWindow::OnClick()
 
     if(flag == 1){
         flag = 0;
-        button->setIcon(QIcon("../View/image/pause.ico"));
-        timer->start(1000 / *framerate);
+        button->setIcon(QIcon("../View/image/pause.png"));
+        timer->start(100 / *framerate);
     }
     else{
         flag = 1;
-        button->setIcon(QIcon("../View/image/play.ico"));
+        button->setIcon(QIcon("../View/image/play.png"));
         timer->stop();
     }
 }
 
 void MainWindow::UpdateQImage()
 {
-    std::cout << "succeed before UpdateQImage" << std::endl;
     picture = QPixmap::fromImage(*image);
-    std::cout << "succeed after convert" << std::endl;
     picture.scaled(pic->size(), Qt::KeepAspectRatioByExpanding);
-    std::cout << "succeed after scaled" << std::endl;
     pic->setPixmap(picture);
-    std::cout << "succeed set pic" << std::endl;
 }
 
 void MainWindow::SetOpenFileCommand(std::shared_ptr<CommandBase> OpenFileCommand)
@@ -265,6 +282,14 @@ void MainWindow::OpenOperation()
         return;
     }
 
+    if(isLoaded){
+        slider->setValue(0);
+        timer->stop();
+        start->setText(QString("00:00"));
+        button->setIcon(QIcon("../View/image/play.png"));
+        isLoaded = 0;
+    }
+
     OpenFileCommand->SetParameters(path);
     OpenFileCommand->Exec();
 
@@ -276,10 +301,8 @@ void MainWindow::OpenOperation()
 
     isLoaded = 1;
 
-    button->setIcon(QIcon("../View/image/pause.ico"));
-    timer->start(1);
-
-    std::cout << "succeed in OpenOperation" << std::endl;
+    button->setIcon(QIcon("../View/image/pause.png"));
+    timer->start(1000 / *framerate);
 }
 
 void MainWindow::SaveOperation()

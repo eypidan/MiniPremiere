@@ -65,6 +65,8 @@ private slots:
 
 private:
     QPushButton *button;
+    QPushButton *speedup;
+    QPushButton *speeddown;
     QLabel *pic;
     QSlider *slider;
     QLineEdit *start;
