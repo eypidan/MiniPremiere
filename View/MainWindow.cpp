@@ -18,7 +18,6 @@ MainWindow::MainWindow():
     SetSlider();
     SetLayer();
 
-    timestamp = std::make_shared<int>();
     TheUpdateViewNotification = std::make_shared<UpdateViewNotification>(this);
 
     isLoaded = false;
