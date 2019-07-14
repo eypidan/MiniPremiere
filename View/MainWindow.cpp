@@ -6,9 +6,9 @@ MainWindow::MainWindow():
 {
     resize(QSize(960, 600));
 
-    //QPalette palette(this->palette());
-    //palette.setColor(QPalette::Window, Qt::gray);
-    //this->setPalette(palette);
+    QPalette palette(this->palette());
+    palette.setColor(QPalette::Window, qRgb(200, 200, 200));
+    this->setPalette(palette);
 
     CreateStatusBar();
     CreateMenuAndToolBar();
@@ -109,7 +109,7 @@ void MainWindow::CreatePicLabel()
 void MainWindow::CreatePlayButton()
 {
     button = new QPushButton();
-    button->setIcon(QIcon("../image/play.ico"));
+    button->setIcon(QIcon("../View/image/play.ico"));
     button->setIconSize(QSize(40, 40));
     button->setStyleSheet(QString("QPushButton{border-radius:64px;}"));
     //layout()->addWidget(button);
@@ -145,7 +145,6 @@ void MainWindow::SetSlider()
     slider->setMaximum(0);
     slider->setMinimum(0);
     slider->setValue(0);
-    slider->setFixedSize(QSize(860, 30));
     //slider->setSingleStep(1);
     //slider->setStyleSheet(QString("QSlider::handle{border-radius:10px;}"));
 
@@ -180,10 +179,20 @@ void MainWindow::OnTimer()
 
     std::cout << "succeed in FetchQImageCommand->Exec()" << std::endl;
 
-    if(amount % *framerate == 0 && amount != 0){
+    if(amount == *framerate && amount != 0){
+        amount = 0;
         slider->setValue(slider->value() + 1);
     }
     amount++;
+
+    //play over
+    if(slider->value() == *timeduration / 1000000 && amount == *framerate){
+        slider->setValue(0);
+        timer->stop();
+        start->setText(QString("00:00"));
+        button->setIcon(QIcon("../View/image/play.ico"));
+        isLoaded = 0;
+    }
 }
 
 void MainWindow::OnClick()
@@ -196,25 +205,25 @@ void MainWindow::OnClick()
 
     if(flag == 1){
         flag = 0;
-        button->setIcon(QIcon("../image/pause.ico"));
+        button->setIcon(QIcon("../View/image/pause.ico"));
         timer->start(1000 / *framerate);
     }
     else{
         flag = 1;
-        button->setIcon(QIcon("../image/play.ico"));
+        button->setIcon(QIcon("../View/image/play.ico"));
         timer->stop();
     }
 }
 
 void MainWindow::UpdateQImage()
 {
-//    std::cout << "succeed before UpdateQImage" << std::endl;
-//    picture = QPixmap::fromImage(*image);
-//    std::cout << "succeed after convert" << std::endl;
-//    picture.scaled(pic->size(), Qt::KeepAspectRatio);
-//    std::cout << "succeed after setscaled" << std::endl;
-//    pic->setPixmap(picture);
-//    std::cout << "succeed set pic" << std::endl;
+    std::cout << "succeed before UpdateQImage" << std::endl;
+    picture = QPixmap::fromImage(*image);
+    std::cout << "succeed after convert" << std::endl;
+    picture.scaled(pic->size(), Qt::KeepAspectRatioByExpanding);
+    std::cout << "succeed after scaled" << std::endl;
+    pic->setPixmap(picture);
+    std::cout << "succeed set pic" << std::endl;
 }
 
 void MainWindow::SetOpenFileCommand(std::shared_ptr<CommandBase> OpenFileCommand)
@@ -267,8 +276,8 @@ void MainWindow::OpenOperation()
 
     isLoaded = 1;
 
-    button->setIcon(QIcon("../image/pause.ico"));
-    timer->start(1000 / *framerate);
+    button->setIcon(QIcon("../View/image/pause.ico"));
+    timer->start(1);
 
     std::cout << "succeed in OpenOperation" << std::endl;
 }
