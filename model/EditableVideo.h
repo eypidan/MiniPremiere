@@ -26,8 +26,9 @@ extern "C"{
 class EditableVideo{
 private:
     int64_t duration = 0;
-    int64_t timeBase = 0;
+    //int64_t timeBase = 0;
     int VideoFps = 0;
+    int RealFrequency =0;
     bool playing = false;  //deprecated
 
     AVPacket        currentPacket;
@@ -50,7 +51,7 @@ public:
     ~EditableVideo();
     std::shared_ptr<cv::Mat> getNextImage();
 
-    inline int GetFps(){return VideoFps;}
+    inline int GetFps(){return RealFrequency;}
     inline int64_t GetDuration(){return duration;}
     void seekImage(int timeStamp);
 };
