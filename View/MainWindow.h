@@ -21,8 +21,10 @@
 #include <QHBoxLayout>
 #include <QSlider>
 #include <QLineEdit>
+#include <QMessageBox>
 #include "../common/command.h"
 #include "./Notification/UpdateViewNotification.h"
+#include "./Notification/UpdateTimeStampNotification.h"
 
 class MainWindow : public QMainWindow
 {
@@ -40,9 +42,11 @@ public:
     void SetLayer();
 
     void UpdateQImage();
+    void RestartTimer();
     //set command
     void SetOpenFileCommand(std::shared_ptr<CommandBase>);
     void SetFetchQImageCommand(std::shared_ptr<CommandBase>);
+    void SetTimeJumpCommand(std::shared_ptr<CommandBase>);
     //set data
     void SetQImage(std::shared_ptr<QImage>);
     void SetFrameRate(std::shared_ptr<int>);
@@ -50,9 +54,12 @@ public:
 
     //get notification
     std::shared_ptr<Notification> GetUpdateViewNotification();
+    std::shared_ptr<Notification> GetUpdateTimeStampNotification();
 
 private slots:
     void OnClick();
+    void BackFiveSec();
+    void ForwardFiveSec();
     void OnTimer();
     void SetLineEditValue();
     void OpenOperation();
@@ -61,12 +68,11 @@ private slots:
     void ExitOperation();
     void HelpOperation();
     void AboutUsOperation();
-    //QImage FromCVtoQImage(const cv::Mat &mat);
 
 private:
     QPushButton *button;
-    QPushButton *speedup;
-    QPushButton *speeddown;
+    QPushButton *back;
+    QPushButton *forward;
     QLabel *pic;
     QSlider *slider;
     QLineEdit *start;
@@ -76,11 +82,14 @@ private:
 
     bool isLoaded;
 
+    std::shared_ptr<int> timestamp;
     std::shared_ptr<QImage> image;
     std::shared_ptr<int> framerate;
     std::shared_ptr<int> timeduration;
     std::shared_ptr<CommandBase> OpenFileCommand;
     std::shared_ptr<CommandBase> FetchQImageCommand;
+    std::shared_ptr<CommandBase> TimeJumpCommand;
     std::shared_ptr<UpdateViewNotification> TheUpdateViewNotification;
+    std::shared_ptr<UpdateTimeStampNotification> TheUpdateTimeStampNotification;
 };
 #endif

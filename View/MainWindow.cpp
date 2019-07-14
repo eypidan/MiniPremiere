@@ -7,7 +7,7 @@ MainWindow::MainWindow():
     resize(QSize(960, 600));
 
     QPalette palette(this->palette());
-    palette.setColor(QPalette::Window, qRgb(200, 200, 200));
+    palette.setColor(QPalette::Window, qRgb(180, 180, 180));
     this->setPalette(palette);
 
     CreateStatusBar();
@@ -18,6 +18,7 @@ MainWindow::MainWindow():
     SetSlider();
     SetLayer();
 
+    timestamp = std::make_shared<int>();
     TheUpdateViewNotification = std::make_shared<UpdateViewNotification>(this);
 
     isLoaded = 0;
@@ -26,7 +27,6 @@ MainWindow::MainWindow():
 void MainWindow::CreateStatusBar()
 {
     QLabel *statusLabel = new QLabel();
-    //statusLabel->setFrameShadow()
     QPalette palette(statusLabel->palette());
     palette.setColor(QPalette::Window, Qt::gray);
     statusLabel->setPalette(palette);
@@ -53,7 +53,7 @@ void MainWindow::CreateMenuAndToolBar()
     saveAction->setShortcuts(QKeySequence::Save);
     saveAction->setStatusTip(tr("Save the file as current file"));
     fileMenu->addAction(saveAction);
-    fileTool->addAction(saveAction);
+    //fileTool->addAction(saveAction);
     connect(saveAction, &QAction::triggered, this, &MainWindow::SaveOperation);
 
     //save file as another file action
@@ -61,7 +61,7 @@ void MainWindow::CreateMenuAndToolBar()
     saveAsAction->setShortcuts(QKeySequence::SaveAs);
     saveAsAction->setStatusTip(tr("Save the file as another file"));
     fileMenu->addAction(saveAsAction);
-    fileTool->addAction(saveAsAction);
+    //fileTool->addAction(saveAsAction);
     connect(saveAsAction, &QAction::triggered, this, &MainWindow::SaveAsOperation);
 
     //add a separator before "exit" in menu
@@ -74,20 +74,27 @@ void MainWindow::CreateMenuAndToolBar()
     fileMenu->addAction(exitAction);
     connect(exitAction, &QAction::triggered, this, &MainWindow::ExitOperation);
 
+    fileTool->addSeparator();
 
     //about menu
     QMenu *aboutMenu = menuBar()->addMenu(tr("About"));
+    //QToolBar *aboutTool = addToolBar(tr("About"));
 
     //help action in about menu
-    QAction *helpAction = new QAction(QIcon("../image/help.png"), tr("Help"), this);
-    helpAction->setStatusTip(tr("How to use"));
+    QAction *helpAction = new QAction(QIcon("../View/image/help.png"), tr("Help"), this);
+    helpAction->setStatusTip(tr("Some description"));
     aboutMenu->addAction(helpAction);
+    fileTool->addAction(helpAction);
+
     connect(helpAction, &QAction::triggered, this, &MainWindow::HelpOperation);
 
+    fileTool->addSeparator();
+
     //about us action in about menu
-    QAction *aboutUsAction = new QAction(tr("About us..."), this);
+    QAction *aboutUsAction = new QAction(QIcon("../View/image/developer.png"), tr("About us..."), this);
     aboutUsAction->setStatusTip("The developers");
     aboutMenu->addAction(aboutUsAction);
+    fileTool->addAction(aboutUsAction);
     connect(aboutUsAction, &QAction::triggered, this, &MainWindow::AboutUsOperation);
 
     //statusBar()->showMessage(" ");
@@ -118,15 +125,17 @@ void MainWindow::CreatePlayButton()
     //layout()->addWidget(button);
     connect(button, SIGNAL(clicked()), this, SLOT(OnClick()));
 
-    speeddown = new QPushButton();
-    speeddown->setIcon(QIcon("../View/image/speeddown.png"));
-    speeddown->setIconSize(QSize(40, 40));
-    speeddown->setStyleSheet(QString("QPushButton{border-radius:35px;}"));
+    back = new QPushButton();
+    back->setIcon(QIcon("../View/image/back.png"));
+    back->setIconSize(QSize(40, 40));
+    back->setStyleSheet(QString("QPushButton{border-radius:35px;}"));
+    connect(back, SIGNAL(clicked()), this, SLOT(BackFiveSec()));
 
-    speedup = new QPushButton();
-    speedup->setIcon(QIcon("../View/image/speedup.png"));
-    speedup->setIconSize(QSize(40, 40));
-    speedup->setStyleSheet(QString("QPushButton{border-radius:35px;}"));
+    forward = new QPushButton();
+    forward->setIcon(QIcon("../View/image/forward.png"));
+    forward->setIconSize(QSize(40, 40));
+    forward->setStyleSheet(QString("QPushButton{border-radius:35px;}"));
+    connect(forward, SIGNAL(clicked()), this, SLOT(ForwardFiveSec()));
 }
 
 void MainWindow::SetTimer()
@@ -151,9 +160,9 @@ void MainWindow::SetLayer()
     vLayout->addLayout(hLayout);
 
     hLayout_button->addStretch();
-    hLayout_button->addWidget(speeddown);
+    hLayout_button->addWidget(back);
     hLayout_button->addWidget(button);
-    hLayout_button->addWidget(speedup);
+    hLayout_button->addWidget(forward);
     hLayout_button->addStretch();
     hLayout_button->setSpacing(10);
 
@@ -236,11 +245,49 @@ void MainWindow::OnClick()
     }
 }
 
+void MainWindow::BackFiveSec()
+{
+    int nowtime = slider->value();
+    int jumptime = nowtime + 5;
+
+    if(jumptime >= *timeduration / 1000000){
+        *timestamp = *timeduration / 1000000;
+    }
+    else{
+        *timestamp = jumptime;
+    }
+
+    timer->stop();
+    TimeJumpCommand->Exec();
+}
+
+void MainWindow::ForwardFiveSec()
+{
+    int nowtime = slider->value();
+    int jumptime = nowtime - 5;
+
+    if(jumptime < 0){
+        *timestamp = 0;
+    }
+    else{
+        *timestamp = jumptime;
+    }
+
+    timer->stop();
+    TimeJumpCommand->Exec();
+}
+
 void MainWindow::UpdateQImage()
 {
     picture = QPixmap::fromImage(*image);
     picture.scaled(pic->size(), Qt::KeepAspectRatioByExpanding);
     pic->setPixmap(picture);
+}
+
+void MainWindow::RestartTimer()
+{
+    button->setIcon(QIcon("../View/image/pause.png"));
+    timer->start(500 / *framerate);
 }
 
 void MainWindow::SetOpenFileCommand(std::shared_ptr<CommandBase> OpenFileCommand)
@@ -250,6 +297,10 @@ void MainWindow::SetOpenFileCommand(std::shared_ptr<CommandBase> OpenFileCommand
 
 void MainWindow::SetFetchQImageCommand(std::shared_ptr<CommandBase> FetchQImageCommand){
     this->FetchQImageCommand = FetchQImageCommand;
+}
+
+void MainWindow::SetTimeJumpCommand(std::shared_ptr<CommandBase> TimeJumpCommand){
+    this->TimeJumpCommand = TimeJumpCommand;
 }
 
 void MainWindow::SetQImage(std::shared_ptr<QImage> image)
@@ -270,6 +321,11 @@ void MainWindow::SetFrameRate(std::shared_ptr<int> framerate)
 std::shared_ptr<Notification> MainWindow::GetUpdateViewNotification()
 {
     return std::static_pointer_cast<Notification>(TheUpdateViewNotification);
+}
+
+std::shared_ptr<Notification> MainWindow::GetUpdateTimeStampNotification()
+{
+    return std::static_pointer_cast<Notification>(TheUpdateTimeStampNotification);
 }
 
 //need to be updated
@@ -302,7 +358,7 @@ void MainWindow::OpenOperation()
     isLoaded = 1;
 
     button->setIcon(QIcon("../View/image/pause.png"));
-    timer->start(1000 / *framerate);
+    timer->start(500 / *framerate);
 }
 
 void MainWindow::SaveOperation()
@@ -318,14 +374,37 @@ void MainWindow::SaveAsOperation()
 void MainWindow::ExitOperation()
 {
     qDebug() << "Press Exit" << endl;
+
+    switch(QMessageBox::question(this, tr("Exit"), tr("Do you really want to exit?"), QMessageBox::Yes | QMessageBox::No)){
+        case QMessageBox::Yes:
+            exit(0);
+        case QMessageBox::No:
+            break;
+        default:
+            break;
+    }
 }
 
 void MainWindow::HelpOperation()
 {
     qDebug() << "Press Help" << endl;
+
+    const char message[] = "<h2>Supported:</h2>Play video</br><h2>Not supported yet:</h2>The audio<br/>The procedure control";
+    QMessageBox helpmessage(QMessageBox::NoIcon, "Help", message);
+    QPixmap helppic("../View/image/help.png");
+
+    helpmessage.setIconPixmap(helppic.scaled(QSize(40, 40), Qt::KeepAspectRatio));
+    helpmessage.exec();
 }
 
 void MainWindow::AboutUsOperation()
 {
     qDebug() << "Press About us" << endl;
+
+    const char message[] = "<h2>The developers:</h2>Zhu Yuanming<br/>Pang Siyuan<br/>Lei Xiao";
+    QMessageBox aboutusmessage(QMessageBox::NoIcon, "Developer", message);
+    QPixmap aboutuspic("../View/image/developer.png");
+
+    aboutusmessage.setIconPixmap(aboutuspic.scaled(QSize(40, 40), Qt::KeepAspectRatio));
+    aboutusmessage.exec();
 }
