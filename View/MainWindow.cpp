@@ -380,7 +380,7 @@ void MainWindow::ExitOperation()
 
 void MainWindow::HelpOperation()
 {
-    const char message[] = "<h2>Supported:</h2>Play video</br><h2>Not supported yet:</h2>The audio<br/>The procedure control";
+    const char message[] = "<h2>Supported:</h2>Play video<br/>Procedure control<h2>Not supported yet:</h2>The audio";
     QMessageBox helpmessage(QMessageBox::NoIcon, "Help", message);
     QPixmap helppic("../View/image/help.png");
 
