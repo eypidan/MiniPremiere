@@ -5,7 +5,7 @@ EditableVideo::~EditableVideo(){
     av_free(currentFrameRGB);
 
     av_free(currentFrame);
-    avcodec_close(pCodecContext);
+    avcodec_close(pCodecContext_video);
     avformat_close_input(&pFormatContext);
 
 }
@@ -38,7 +38,6 @@ EditableVideo::EditableVideo(std::string srcPath) {
     }
     //find first video stream
     AVCodec *pCodec = nullptr;
-    AVCodecParameters *pCodecParameters =  nullptr;
 
     for (int i = 0; i < pFormatContext->nb_streams; i++){
         AVCodecParameters *pLocalCodecParameters =  nullptr;
@@ -55,9 +54,8 @@ EditableVideo::EditableVideo(std::string srcPath) {
             if (this->video_stream_index == -1) {
                 this->video_stream_index = i;
                 pCodec = pLocalCodec;
-                pCodecParameters = pLocalCodecParameters;
-                this->pCodecContext = pFormatContext->streams[i]->codec;
-                if(avcodec_open2(pCodecContext, pCodec, 0) < 0){ //open video decoder
+                this->pCodecContext_video = pFormatContext->streams[i]->codec;
+                if(avcodec_open2(pCodecContext_video, pCodec, 0) < 0){ //open video decoder
                     throw "error";
             }
                 this->VideoFps = av_q2d(pFormatContext->streams[i]->r_frame_rate);
@@ -67,6 +65,10 @@ EditableVideo::EditableVideo(std::string srcPath) {
 
         //audio codec
         if (pLocalCodecParameters->codec_type == AVMEDIA_TYPE_AUDIO) {
+            if (this->audio_stream_index == -1) {
+                this->audio_stream_index = i;
+            }
+            this->pCodecContext_audio = pFormatContext->streams[i]->codec;
             printf("Audio Codec: %d channels, sample rate %d", pLocalCodecParameters->channels, pLocalCodecParameters->sample_rate);
         }
 
@@ -74,40 +76,50 @@ EditableVideo::EditableVideo(std::string srcPath) {
         //printf("\tCodec %s ID %d bit_rate %lld", pLocalCodec->name, pLocalCodec->id, pCodecParameters->bit_rate);
     }
 
-    numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecContext->width, pCodecContext->height);
+    numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecContext_video->width, pCodecContext_video->height);
     buffer = (uint8_t *)av_malloc( numBytes*sizeof(uint8_t));
-    avpicture_fill((AVPicture *)currentFrameRGB, buffer, AV_PIX_FMT_RGB24,pCodecContext->width, pCodecContext->height);
+    avpicture_fill((AVPicture *)currentFrameRGB, buffer, AV_PIX_FMT_RGB24,pCodecContext_video->width, pCodecContext_video->height);
 }
 
 std::shared_ptr<cv::Mat> EditableVideo::getNextImage() {
-    while(1){
+    int ret = AVERROR(EAGAIN) ;
+    while(ret == AVERROR(EAGAIN)){
         if(av_read_frame(this->pFormatContext, &this->currentPacket) >= 0){
             if(this->currentPacket.stream_index == this->video_stream_index){ //judge if video data
-                avcodec_decode_video2(pCodecContext, currentFrame, &frameFinished, &currentPacket);
-                if(frameFinished){
+                ret = avcodec_send_packet(pCodecContext_video, &currentPacket);
+                if(ret < 0){
+                    fprintf(stderr, "Error sending a packet for decoding\n");
+                    exit(1);
+                }
+                while(ret >= 0) {
+                    ret = avcodec_receive_frame(pCodecContext_video, currentFrame);
+                    if (ret == AVERROR(EAGAIN))// || ret == AVERROR_EOF
+                        break;
                     static struct SwsContext *img_convert_ctx;
-                    if(img_convert_ctx == NULL) {
-                        int w = pCodecContext->width;
-                        int h = pCodecContext->height;
-                        img_convert_ctx = sws_getContext(w, h, pCodecContext->pix_fmt, w, h, AV_PIX_FMT_RGB24, SWS_BICUBIC,NULL, NULL, NULL);
-                        if(img_convert_ctx == NULL) {
+                    if (img_convert_ctx == NULL) {
+                        int w = pCodecContext_video->width;
+                        int h = pCodecContext_video->height;
+                        img_convert_ctx = sws_getContext(w, h, pCodecContext_video->pix_fmt, w, h, AV_PIX_FMT_RGB24,
+                                                         SWS_BICUBIC, NULL, NULL, NULL);
+                        if (img_convert_ctx == NULL) {
                             fprintf(stderr, "Cannot initialize the conversion context!\n");
                             exit(1);
                         }
                     }
                     //convert YUV420p image to BRG24
-                    sws_scale(img_convert_ctx, currentFrame->data, currentFrame->linesize, 0, pCodecContext->height, currentFrameRGB->data, currentFrameRGB->linesize);
-                    CopyDate(currentFrameRGB, pCodecContext->width, pCodecContext->height,currentPacket.pts-prepts);
+                    sws_scale(img_convert_ctx, currentFrame->data, currentFrame->linesize, 0, pCodecContext_video->height,
+                              currentFrameRGB->data, currentFrameRGB->linesize);
+                    CopyDate(currentFrameRGB, pCodecContext_video->width, pCodecContext_video->height,
+                             currentPacket.pts - prepts);
                     prepts = currentPacket.pts;
                     return currentMatPointer;
                 }
-                av_packet_unref(&currentPacket);
-                break;
+                continue;
             }
             av_packet_unref(&currentPacket);
         }
         else{
-            std::shared_ptr<cv::Mat> blackPhoto = std::make_shared<cv::Mat>(cv::Size(pCodecContext->width, pCodecContext->height), CV_8UC3, cv::Scalar(0));
+            std::shared_ptr<cv::Mat> blackPhoto = std::make_shared<cv::Mat>(cv::Size(pCodecContext_video->width, pCodecContext_video->height), CV_8UC3, cv::Scalar(0));
             currentMatPointer = blackPhoto;
             return currentMatPointer;
         }

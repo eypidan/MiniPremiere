@@ -33,10 +33,12 @@ private:
     AVPacket        currentPacket;
     AVFormatContext *pFormatContext = nullptr;
     AVFrame         *currentFrame;
-    AVCodecContext  *pCodecContext;
+    AVCodecContext  *pCodecContext_video = nullptr;
+    AVCodecContext  *pCodecContext_audio = nullptr;
     AVFrame         *currentFrameRGB;
     std::shared_ptr<cv::Mat> currentMatPointer;
     int video_stream_index = -1;
+    int audio_stream_index = -1;
     int frameFinished = 0;
     int64_t prepts = 0;
     int             numBytes;

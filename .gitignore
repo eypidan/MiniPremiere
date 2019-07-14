@@ -9,13 +9,13 @@ CTestTestfile.cmake
 Debug
 output/*
 .vs
-.vscode/*
+.vscode/
 *.index
 *.db
 *.xml
 *.mp4
 *.struct
-.idea/*
+.idea/
 cmake-build-debug
 model/.idea/*
 *.log

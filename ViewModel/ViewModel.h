@@ -54,6 +54,8 @@ public:
 		cv_image = testVideo->getNextImage();
 		cv::Mat cvimage_temp;
 		cv::Mat *normalptr = cv_image.get();
+		cv::namedWindow("Video", CV_WINDOW_AUTOSIZE);
+		cv::imshow("Video", *cv_image);
 		//cv::cvtColor
 		cv::cvtColor(*normalptr, cvimage_temp, CV_BGR2RGB);
 		std::cout << "success" << std::endl;
