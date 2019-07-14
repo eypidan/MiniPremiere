@@ -154,7 +154,3 @@ void EditableVideo::seekImage(int timeStamp) {
     if(av_seek_frame(this->pFormatContext, this->video_stream_index, targetFrame, AVSEEK_FLAG_BACKWARD) < 0)
         printf("av_seek_frame failed.");
 }
-//AV_TIME_BASE
-//158000
-//1980420
-//1941504
