@@ -5,6 +5,7 @@ MainWindow::MainWindow():
     QMainWindow()
 {
     resize(QSize(960, 600));
+    setWindowTitle(tr("MiniPlayer"));
 
     QPalette palette(this->palette());
     palette.setColor(QPalette::Window, qRgb(180, 180, 180));
