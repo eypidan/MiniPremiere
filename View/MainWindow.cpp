@@ -338,7 +338,7 @@ std::shared_ptr<Notification> MainWindow::GetUpdateTimeStampNotification()
 //need to be updated
 void MainWindow::OpenOperation()
 {
-    QString filepath = QFileDialog::getOpenFileName(this, tr("Open Video"), ".", tr("Video File(*.avi *.mp4)"));
+    QString filepath = QFileDialog::getOpenFileName(this, tr("Open Video"), ".", tr("Video File(*.mp4)"));
     std::string path = filepath.toStdString();
 
     if(filepath == nullptr){
