@@ -79,7 +79,116 @@ View分支和model分支分开开发，model分支包含了Model层和VideModel�
 
   ![View](./assets/View.png)
 
+
+
+### 持续集成
+
+我们本次使用了travis ci来进行持续集成与自动化部署到github release。在yml中，由于本次项目目标实现跨平台，所以编程环境要求适用Qt、Opencv和ffmpeg, 本次项目我们主要实现了opencv、ffmpeg的ubuntu环境配置和整体项目的自动部署。
+
+#### 环境配置
+
+1. opencv
+
+   ```sh
+     - sudo apt-get install -y build-essential
+     - sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev libqt5gui5 libqt5gui5 qt5-default qttools5-dev-tools libqt5concurrent5 libqt5widgets5
+     - sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+     - sudo apt-get install libpostproc-dev libavfilter-dev libavdevice-dev
+   
+       - git clone https://github.com/opencv/opencv.git
+     - cd opencv
+     - mkdir -p build
+     - cd build
+     - cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_EXAMPLES=off -DBUILD_DOCS=off -DBUILD_SHARED_LIBS=off  -DBUILD_FAT_JAVA_LIB=off -DBUILD_TESTS=off -DBUILD_TIFF=on -DBUILD_JASPER=on -DBUILD_JPEG=on  -DBUILD_OPENEXR=on -DBUILD_PNG=on -DBUILD_TIFF=on -DBUILD_ZLIB=on -DBUILD_opencv_apps=off -DBUILD_opencv_calib3d=off -DBUILD_opencv_contrib=off -DBUILD_opencv_features2d=off -DBUILD_opencv_flann=off -DBUILD_opencv_gpu=off -DBUILD_opencv_java=off -DBUILD_opencv_legacy=off -DBUILD_opencv_ml=off -DBUILD_opencv_nonfree=off -DBUILD_opencv_objdetect=off -DBUILD_opencv_ocl=off -DBUILD_opencv_photo=off -DBUILD_opencv_python=off -DBUILD_opencv_stitching=off -DBUILD_opencv_superres=off -DBUILD_opencv_ts=off -DBUILD_opencv_video=off -DBUILD_opencv_videostab=off -DBUILD_opencv_world=off -DBUILD_opencv_lengcy=off -DBUILD_opencv_lengcy=off -DWITH_1394=off -DWITH_EIGEN=off -DWITH_FFMPEG=off -DWITH_GIGEAPI=off -DWITH_GSTREAMER=off -DWITH_GTK=on -DWITH_PVAPI=off -DWITH_V4L=off -DWITH_LIBV4L=off -DWITH_CUDA=off -DWITH_CUFFT=off -DWITH_OPENCL=off -DWITH_OPENCLAMDBLAS=off -DWITH_OPENCLAMDFFT=off ..
+     - sudo make -j4 install
+     - sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
+     - sudo ldconfig
+     - cd ..
+     - cd ..
+   ```
+
+   
+
+2. Qt
+
+- 关于Qt我们这里使用了脚本来安装最新的5.13.0版本，安装bash脚本在[extract-qt-installer](../extract-qt-installer),  [install-qt](../install-qt)
+
+- 在.travis.yml中做如下执行即可
+
+   ```sh
+     - wget -c http://download.qt.io/official_releases/qt/5.13/5.13.0/qt-opensource-linux-x64-5.13.0.run
+     - sudo chmod +x qt-opensource-linux-x64-5.13.0.run
+     - sudo chmod +x ./extract-qt-installer ./install-qt
+     - sudo ./install-qt
+   ```
+
+   
+
+3. ffmpeg
+  本项目采用ffmpeg-4.1.3版本。
+
+  &emsp;
+  关于ffmpeg环境的配置
+
+  ```shell
+    - sudo add-apt-repository -y ppa:jonathonf/ffmpeg-4
+    - sudo apt-get update  
+    - sudo apt-get install ffmpeg
+  ```
+
+
+
+#### 自动部署
+
+&emsp;
+由于yml文件不仅仅可以实现文件的检错，也可以适用于github的release版本的发行。本次项目决定实现每次本地从master分支push文件都自动检错并发行代码和可执行文件的自动部署功能。
+
+```shell
+before_deploy:
+  - export TRAVIS_TAG="1.0.$TRAVIS_BUILD_NUMBER"
+  - git config --global user.name "$USER_NAME"
+  - git config --global user.email "$USER_EMAIL" 
+  - git tag "$TRAVIS_TAG" "$TRAVIS_COMMIT"
+
+deploy:
+  provider: releases
+  tag_name: $TRAVIS_TAG
+  target_commitish: $TRAVIS_COMMIT
+  overwirte: true
+  api_key: $GIT_TOKEN 
+  file_glob: true
+  file:
+    - MiniPreimere 
+  name: MiniPlayer-$TRAVIS_TAG
+  skip-cleanup: true
+  on:
+      branch: master
+      repo: eypidan/MiniPremiere
+
+```
+
+#### 效果展示
+
+- yml的通过
+
+<img style=" zoom:100%; align:top" src="assets/18_1.png" />
+
+- yml文件的环境编译
+
+<img style=" zoom:100%; align:top" src="assets/18_2.png" />
+
+- yml文件的自动部署
+
+<img style=" zoom:100%; align:top" src="assets/18_3.png" />
+
+<img style=" zoom:100%; align:top" src="assets/18_4.png" />
+
+- github的release效果图
+
+<img style=" zoom:100%; align:top" src="assets/18_5.png" />
+
 ### 单元测试
+
 #### 测试原理(model 部分)
 
 - 创建一个Model实例testModel，通过调用Model的`openfile()`方法，绑定我们需要处理的视频文件。（测试`openfile()`）
