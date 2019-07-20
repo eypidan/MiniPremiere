@@ -11,20 +11,20 @@
 
 - 项目实现了一个简易的视频播放器，支持播放部分格式的媒体文件，例如MP4
 
-- 项目的总体报告见****
+- 项目的总体报告见[Report](https://github.com/eypidan/MiniPremiere/blob/master/doc/MiniPlayer%E6%80%BB%E4%BD%93%E6%8A%A5%E5%91%8A.md)
 
-- 项目的需求分析见****
+- 项目的需求分析见[analysis](https://github.com/eypidan/MiniPremiere/blob/master/doc/MiniPlayer%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A.md)
 
 - 项目的model部分单元测试代码见 [testmodel.cpp](https://github.com/eypidan/MiniPremiere/blob/master/model/testmodel.cpp)
 
   
 
   <br>
-### introduction
+### Introduction
 - Our project uses MVVM(Model-view-viewmodel) softerware architectural pattern.
 - This project implements a Mini Video Player to play some media files.
-- Final report of this project refers to ****.
-- The requirement analysis refers to ****.
+- Final report of this project refers to [Report](https://github.com/eypidan/MiniPremiere/blob/master/doc/MiniPlayer%E6%80%BB%E4%BD%93%E6%8A%A5%E5%91%8A.md)
+- The requirement analysis refers to [analysis](https://github.com/eypidan/MiniPremiere/blob/master/doc/MiniPlayer%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A.md)
 - The test about model refers to  [testmodel.cpp](https://github.com/eypidan/MiniPremiere/blob/master/model/testmodel.cpp)
 
 ### Features
