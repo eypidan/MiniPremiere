@@ -128,7 +128,7 @@ int main(){
 ![View](./assets/View.png)
 
 #### 打开文件功能
-![FirstIteration](./assets/FirstIteration .gif)
+![FirstIteration](./assets/FirstIteration.gif)
 #### 播放功能
 ![Second](./assets/Second.gif)
 #### 跳转功能
