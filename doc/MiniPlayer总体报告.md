@@ -55,7 +55,7 @@ View分支和model分支分开开发，model分支包含了Model层和VideModel�
 
 - 完成初步UI设计
 - 通过OpenFileCommand第一次通过app层将View、ViewModel、Model层整合起来
-- ![1563584715452](C:\Users\px\Desktop\MiniPremiere\doc\assets\1563584715452.png)
+- ![1563584715452](./assets/1563584715452.png)
 
 
 #### 第二轮迭代（[ v1.0.1](https://github.com/eypidan/MiniPremiere/tree/v1.0.1)）
@@ -66,7 +66,7 @@ View分支和model分支分开开发，model分支包含了Model层和VideModel�
 
 - 本次迭代增加视频播放功能，并可以暂停
 
-- ![1563584741423](C:\Users\px\Desktop\MiniPremiere\doc\assets\1563584741423.png)
+- ![1563584741423](./assets/1563584741423.png)
 
   
   
@@ -77,7 +77,7 @@ View分支和model分支分开开发，model分支包含了Model层和VideModel�
 
 - 通过此command，我们增加了快进和快退功能
 
-  ![View](.\assets\View.png)
+  ![View](./assets/View.png)
 
 ### 单元测试
 #### 测试原理(model 部分)
@@ -125,7 +125,7 @@ int main(){
 
 #### 软件界面
 
-![View](.\assets\View.png)
+![View](./assets/View.png)
 
 #### 打开文件功能
 ![FirstIteration](./assets/FirstIteration .gif)
